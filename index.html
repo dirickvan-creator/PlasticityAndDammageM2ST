@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapitre 1 — Calcul anélastique · Version interactive v8</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script>
+(function(){if(window.Plotly&&window.Plotly.newPlot)return;
+var u=['https://unpkg.com/plotly.js@2.27.0/dist/plotly.min.js','https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js'],i=0;
+function n(){if(window.Plotly&&window.Plotly.newPlot||i>=u.length)return;var s=document.createElement('script');s.src=u[i++];s.onload=function(){if(!(window.Plotly&&window.Plotly.newPlot))n()};s.onerror=n;document.head.appendChild(s)}n()})();
+</script>
+<style>
+:root{--blue:#1e3a8a;--blue-d:#172554;--blue-l:#3b82f6;--gold:#ca8a04;--gold-l:#facc15;
+--bg:#f6f7fb;--ink:#1f2937;--muted:#6b7280;--border:#e5e7eb;--ok:#16a34a;--warn:#d97706;--bad:#dc2626;
+--sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shl:0 10px 25px -5px rgba(0,0,0,.08),0 8px 10px -6px rgba(0,0,0,.05)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{padding-bottom:60px}
+header.top{background:linear-gradient(135deg,#1e3a8a,#1e40af 60%,#312e81);color:#fff;padding:16px 28px;border-bottom:4px solid var(--gold);box-shadow:var(--shl)}
+header.top .tag{display:inline-block;background:var(--gold);color:var(--blue-d);font-weight:800;font-size:.7rem;padding:2px 10px;border-radius:999px;letter-spacing:.5px;text-transform:uppercase}
+header.top h1{margin:6px 0 2px;font-size:1.4rem}
+header.top p{margin:0;font-size:.88rem;opacity:.9}
+.warnbar{display:none;background:#fef3c7;border:2px solid var(--warn);border-radius:10px;padding:10px 14px;margin:12px 22px;color:#78350f;font-size:.86rem}
+nav.chnav{display:flex;flex-wrap:wrap;gap:6px;padding:9px 22px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;box-shadow:var(--sh);align-items:center}
+.nav-label{font-size:.7rem;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-right:6px}
+.nav-btn{border:1px solid var(--border);background:#fff;color:var(--ink);padding:5px 12px;border-radius:999px;font-size:.8rem;font-weight:600;text-decoration:none;transition:.15s}
+.nav-btn:hover{background:#eff6ff;border-color:#bfdbfe;color:var(--blue)}
+.nav-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.progress{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--muted);font-weight:600}
+.pbar{width:130px;height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;position:relative}
+.pbar .a{position:absolute;inset:0 auto 0 0;background:#bfdbfe;width:0;transition:width .3s}
+.pbar .b{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--gold),var(--blue));width:0;transition:width .3s}
+.resetbtn{border:1px solid var(--border);background:#fff;border-radius:6px;font-size:.7rem;padding:3px 8px;cursor:pointer;color:var(--muted)}
+main{max-width:1180px;margin:0 auto;padding:22px 18px}
+section.chs{padding-top:12px;margin-bottom:34px}
+h2.st2{font-size:1.45rem;color:var(--blue);margin:0 0 16px;padding-bottom:10px;border-bottom:3px solid var(--gold);font-weight:800}
+h3{font-size:1.1rem;margin:24px 0 10px;color:var(--blue-d)}
+h4{font-size:.98rem;margin:16px 0 8px;color:#374151}
+h5{font-size:.82rem;margin:0 0 4px;color:var(--blue-d);font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+p{margin:6px 0}ul,ol{margin:6px 0 10px 22px;padding:0}li{margin:3px 0}
+.box{border-radius:10px;padding:13px 17px;margin:14px 0;box-shadow:var(--sh)}
+.box .lab{display:inline-block;color:#fff;font-size:.66rem;font-weight:800;padding:2px 10px;border-radius:999px;letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px}
+.cours{background:#eff6ff;border:1px solid #bfdbfe;border-left:5px solid var(--blue)}.cours .lab{background:var(--blue)}
+.warn{background:#fef2f2;border:1px solid #fecaca;border-left:5px solid var(--bad)}.warn .lab{background:var(--bad)}
+.hypo{background:#fefce8;border:1px solid #fde047;border-left:5px solid var(--gold);font-size:.88rem}.hypo .lab{background:var(--gold);color:var(--blue-d)}
+.ret{background:linear-gradient(135deg,#1e3a8a,#312e81);color:#fff;box-shadow:var(--shl)}.ret .lab{background:var(--gold);color:var(--blue-d)}.ret strong{color:var(--gold-l)}
+.guide{background:#fff;border:2px solid var(--gold)}.guide .lab{background:var(--gold);color:var(--blue-d)}
+.q5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
+.q5>div{background:#f9fafb;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.8rem}
+.q5 b{display:block;color:var(--blue);margin-bottom:2px}
+@media(max-width:860px){.q5{grid-template-columns:1fr 1fr}}
+/* equation card */
+.eq-card{background:#fff;border:1px solid var(--border);border-left:5px solid #9ca3af;border-radius:12px;padding:14px 18px;margin:16px 0;box-shadow:var(--sh);scroll-margin-top:70px}
+.eq-card.explored{border-left-color:var(--blue-l)}.eq-card.mastered{border-left-color:var(--ok);background:#f7fef9}
+.eq-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+.eq-id{background:#dbeafe;color:var(--blue);padding:2px 9px;border-radius:6px;font-size:.7rem;font-weight:800}
+.kind{background:var(--blue);color:#fff;padding:2px 9px;border-radius:6px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.eq-title{font-weight:800;color:var(--blue-d);flex:1;min-width:180px}
+.eq-fig{background:#fef3c7;color:#92400e;padding:2px 9px;border-radius:6px;font-size:.7rem;font-weight:700;text-decoration:none}
+.st{font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:99px;background:#f3f4f6;color:var(--muted)}
+.explored .st{background:#dbeafe;color:var(--blue)}.mastered .st{background:#dcfce7;color:#166534}
+.eq-principle{background:#f9fafb;border-radius:8px;padding:8px 12px;margin:4px 0 8px;font-size:.9rem}
+.eq-principle b{color:var(--blue)}
+.eq-body{font-size:1.05rem;margin:8px 0;overflow-x:auto;padding:8px 0;background:#fafbfc;border-radius:8px;text-align:center}
+.tabs{display:flex;flex-wrap:wrap;gap:2px;margin-top:8px;border-bottom:2px solid var(--border)}
+.tab{border:none;background:none;padding:7px 12px;font-weight:700;font-size:.8rem;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit}
+.tab:hover{color:var(--blue)}.tab.on{color:var(--blue);border-bottom-color:var(--gold)}.tab.seen::after{content:" ✓";color:var(--ok)}
+.panel{display:none;padding:12px 2px 2px}.panel.on{display:block}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:860px){.g3{grid-template-columns:1fr}}
+.pc{background:#f9fafb;border-radius:8px;padding:8px 12px;font-size:.85rem}
+.pc.good{border-left:3px solid var(--ok)}.pc.lim{border-left:3px solid var(--warn)}.pc.err{border-left:3px solid var(--bad)}
+.pc ul{margin:4px 0 4px 18px}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.84rem;background:#fff;border-radius:10px;overflow:hidden;box-shadow:var(--sh)}
+th,td{padding:7px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{background:var(--blue);color:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:.3px}
+tr:nth-child(even) td{background:#f9fafb}
+.step{display:none;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:.9rem}
+.step.show{display:block}.step .n{display:inline-block;background:var(--blue);color:#fff;border-radius:50%;width:22px;height:22px;text-align:center;font-weight:800;font-size:.75rem;line-height:22px;margin-right:8px}
+.btn{background:var(--blue);color:#fff;border:none;padding:6px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem;font-family:inherit}
+.btn:hover{background:var(--blue-d)}.btn.sec{background:#fff;color:var(--blue);border:1px solid #bfdbfe}.btn.sec:hover{background:#eff6ff}
+.try-in{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:8px 18px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:10px 14px}
+label.inp{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600;color:#374151}
+label.inp .il{min-width:92px}label.inp small{color:var(--muted);font-weight:500}
+label.inp input[type=range]{flex:1;min-width:80px;accent-color:var(--blue)}
+label.inp input[type=number]{width:110px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-variant-numeric:tabular-nums}
+.res{font-size:1.15rem;margin:10px 0 4px;padding:8px 14px;background:#ecfdf5;border-left:4px solid var(--ok);border-radius:8px}
+.res b{color:#065f46;font-size:1.3rem}
+.calc-steps{background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 12px 8px 30px;font-size:.84rem;font-family:ui-monospace,monospace}
+.note{margin:6px 0;padding:6px 12px;border-radius:6px;background:#fffbeb;border-left:3px solid var(--warn);font-size:.85rem}
+.fig-interpret{margin-top:8px;padding:8px 12px;background:#ecfdf5;border-left:3px solid var(--ok);border-radius:6px;font-size:.85rem;color:#065f46}
+.sens td:first-child{font-weight:600}
+.mcq-opts{display:flex;flex-direction:column;gap:6px;margin:6px 0}
+.mcq-opts button,.quiz-options button,.predict-options button{text-align:left;border:1px solid #c4b5fd;background:#fff;padding:7px 13px;border-radius:8px;cursor:pointer;font-size:.86rem;font-family:inherit}
+.mcq-opts button:hover,.quiz-options button:hover{background:#ede9fe}
+button.correct{background:#dcfce7!important;border-color:var(--ok)!important;color:#166534;font-weight:700}
+button.wrong{background:#fee2e2!important;border-color:var(--bad)!important;color:#7f1d1d}
+.fb{margin-top:6px;padding:8px 12px;border-radius:6px;font-size:.85rem;display:none}
+.fb.show{display:block}.fb.ok{background:#dcfce7;border-left:3px solid var(--ok)}.fb.bad{background:#fee2e2;border-left:3px solid var(--bad)}.fb.info{background:#dbeafe;border-left:3px solid #0369a1}
+.chal{margin-top:12px;padding:10px 14px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px}
+.chal input[type=text]{padding:6px 8px;border:1px solid var(--border);border-radius:6px;width:150px}
+.quiz,.predict-card{border-radius:10px;padding:12px 16px;margin:12px 0}
+.quiz{background:#f5f3ff;border:1px solid #ddd6fe}.quiz-q{font-weight:700;margin-bottom:6px;color:#4c1d95}
+.quiz-options{display:flex;flex-direction:column;gap:6px}
+.predict-card{background:#fff7ed;border:2px solid #fdba74}.pr-label{font-size:.7rem;font-weight:800;color:#9a3412;letter-spacing:.5px;text-transform:uppercase}
+.pr-q{font-weight:700;margin:2px 0 8px;color:#7c2d12}.predict-options{display:flex;flex-wrap:wrap;gap:8px}.predict-options button{border-color:#fdba74}
+details.ped{margin:10px 0;border:1px solid var(--border);border-radius:8px;padding:8px 14px;background:#f9fafb}
+details.ped[open]{background:#fff;box-shadow:var(--sh)}details.ped summary{cursor:pointer;font-weight:700;color:var(--blue);font-size:.88rem}
+.fig-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;margin:18px 0 24px;box-shadow:var(--shl);scroll-margin-top:70px}
+.fig-head{display:flex;gap:10px;margin-bottom:10px;align-items:center;flex-wrap:wrap}
+.fig-id{font-size:.7rem;font-weight:800;background:var(--gold);color:var(--blue-d);padding:3px 10px;border-radius:6px}
+.fig-title{font-weight:700;color:var(--blue-d)}
+.fig-controls{display:flex;flex-wrap:wrap;gap:12px;background:#f9fafb;border:1px dashed var(--border);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:.82rem}
+.fig-controls label{display:flex;align-items:center;gap:8px;font-weight:600}
+.fig-controls input[type=range]{width:120px;accent-color:var(--blue)}
+.fig-controls .v{min-width:56px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--blue)}
+.plot{width:100%;height:320px;background:#fafbfc;border-radius:8px}.plot.tall{height:380px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.fig-note{font-size:.82rem;color:var(--muted);font-style:italic;margin-top:6px}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:.82rem;border-top:1px solid var(--border);margin-top:40px;background:#fff}
+@media print{nav.chnav,.fig-controls,.predict-card,.quiz,.try-in,.tabs,.btn{display:none}.panel{display:block!important}.step{display:block!important}.plot{height:220px}}
+
+/* ===== v8 : variables, nav, thème sombre, jeu ===== */
+:root{--card:#fff;--plot-bg:#fafbfc;--plot-paper:#ffffff;--plot-grid:#e5e7eb}
+[data-theme="dark"]{--bg:#0f172a;--card:#1e293b;--ink:#e2e8f0;--muted:#94a3b8;--border:#334155;--blue:#2563eb;--blue-d:#93c5fd;--gold:#fbbf24;--gold-l:#fcd34d;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24;--plot-bg:#1e293b;--plot-paper:#0f172a;--plot-grid:#334155}
+nav.chnav{background:var(--card);gap:6px 8px}
+.navtools{display:flex;gap:6px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.navtools .progress{margin-left:0}
+.ibtn{border:1px solid var(--border);background:var(--card);color:var(--ink);border-radius:8px;min-width:34px;height:32px;cursor:pointer;font-size:15px;font-weight:800;font-family:inherit}
+.ibtn:hover{border-color:var(--blue-l)}
+.funbar{display:flex;align-items:center;gap:6px;font-size:.74rem;white-space:nowrap}
+.funbar .fl{color:var(--blue)}.fxp{display:inline-block;width:70px;height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.fxp i{display:block;height:100%;background:linear-gradient(90deg,#10b981,#3b82f6,#8b5cf6);transition:width .4s}
+.funbar .ft{color:var(--muted)}.funbar .fc{color:#ea580c;font-weight:800}.funbar .fs{color:var(--ok);font-weight:800}
+.dash{background:var(--card);border:2px solid var(--blue-l)}.dash .lab{background:var(--blue-l)}
+.dash-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:6px 0 10px}
+.tile{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px 12px;text-align:center}.tile b{display:block;font-size:1.25rem;color:var(--blue)}.tile span{font-size:.72rem;color:var(--muted)}
+.dueh{font-weight:700;margin:6px 0}.due-chip{display:inline-block;margin:3px 6px 3px 0;padding:4px 12px;background:var(--bg);border:1px solid var(--gold);border-radius:999px;color:var(--ink);font-weight:700;font-size:.78rem;text-decoration:none}.due-chip:hover{background:var(--gold);color:#172554}
+.recommend{background:var(--bg);border:2px solid var(--blue-l);border-radius:10px;padding:12px 16px;margin-top:10px}.recommend h5{margin:0 0 4px;color:var(--blue)}.rec-title{font-weight:800;color:var(--blue-d)}.rec-desc{font-size:.85rem;margin:4px 0 8px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin-top:8px}
+.mi{display:block;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px 10px;text-decoration:none;color:var(--ink)}.mi:hover{border-color:var(--blue-l)}
+.mi-t{font-size:.76rem;font-weight:700;margin-bottom:5px}.mi-b{height:7px;background:var(--border);border-radius:99px;overflow:hidden}.mi-b i{display:block;height:100%}.mi-m{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-top:4px}
+.dash-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.tool-card{background:var(--card);border:2px solid var(--blue-l);border-radius:14px;padding:16px;margin:18px 0 24px;box-shadow:var(--shl);scroll-margin-top:70px}
+.tool-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.tool-badge{background:var(--blue-l);color:#fff;font-size:.68rem;font-weight:800;padding:3px 10px;border-radius:6px;letter-spacing:.5px;text-transform:uppercase}
+.tool-title{font-weight:800;color:var(--blue-d);flex:1}
+.tool-hint{background:var(--bg);border-left:3px solid var(--blue-l);border-radius:6px;padding:8px 12px;font-size:.84rem;margin-bottom:12px}
+.share-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:3px 10px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:inherit}.share-btn:hover{color:var(--blue);border-color:var(--blue)}
+.anim-ctrl{display:flex;gap:10px;align-items:center;margin:10px 0;flex-wrap:wrap;padding:10px 14px;background:var(--bg);border-radius:10px;border:1px dashed var(--border)}
+.anim-ctrl .slider-t{flex:1;min-width:140px;accent-color:var(--blue)}.anim-ctrl .tval{font-variant-numeric:tabular-nums;font-weight:700;color:var(--blue)}
+.btn.play{background:#16a34a}
+.specimen{width:100%;height:auto;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin-top:8px}
+.plot .err{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--bad);font-weight:700}.plot{position:relative}
+.yield-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:14px}@media(max-width:860px){.yield-grid{grid-template-columns:1fr}}
+.yield-presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.yield-presets button{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.76rem;font-weight:600;cursor:pointer;color:var(--ink);font-family:inherit}.yield-presets button:hover{border-color:var(--blue);color:var(--blue)}
+#yx-read{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:.84rem}
+.ok-status{color:var(--ok);font-weight:800}.bad-status{color:var(--bad);font-weight:800}
+.dv-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:14px}@media(max-width:760px){.dv-grid{grid-template-columns:1fr}}.dv-svg{width:100%;height:auto;border-radius:8px;background:var(--bg);border:1px solid var(--border)}
+.gstep{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0}.gstep.locked{opacity:.5;pointer-events:none}.gstep.done{border-color:var(--ok)}
+.gstep .sg-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}.gstep .sg-num{background:var(--blue);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem}.gstep.done .sg-num{background:var(--ok);color:#052e16}
+.gs-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.gs-row input{padding:6px 10px;border:1px solid var(--border);border-radius:6px;width:170px;background:var(--card);color:var(--ink);font-family:inherit}
+.gs-hint{display:none;font-size:.8rem;color:var(--muted);font-style:italic;margin-top:4px}.gs-hint.show{display:block}
+.gs-bar{height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:8px}.gs-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--ok));transition:width .3s}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.badge{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;opacity:.4}.badge.unlocked{opacity:1;border-color:var(--gold)}.badge .icon{font-size:26px}.badge .name{font-size:.74rem;font-weight:800}.badge .desc{font-size:.66rem;color:var(--muted)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(160%);background:var(--ink);color:var(--bg);padding:10px 22px;border-radius:10px;font-weight:700;z-index:1000;box-shadow:var(--shl);transition:transform .3s;font-size:.88rem;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}.toast.ok{background:#15803d;color:#fff}.toast.bad{background:#b91c1c;color:#fff}.toast.big{font-size:1.05rem;padding:14px 28px}
+.confetti-piece{position:fixed;top:-20px;z-index:9999;pointer-events:none;animation:cf 2.5s linear forwards}@keyframes cf{to{transform:translateY(105vh) rotate(720deg);opacity:0}}
+.modal{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:16px}.modal.show{display:flex}
+.modal-card{background:var(--card);color:var(--ink);border-radius:16px;padding:22px;max-width:620px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.modal-head h3{margin:0}
+.speed-timer{font-size:1.8rem;font-weight:900;color:var(--blue);font-variant-numeric:tabular-nums}.speed-timer.danger{color:var(--bad)}
+.speed-q{font-size:1.05rem;font-weight:700;margin-bottom:12px}.speed-options{display:flex;flex-direction:column;gap:8px}
+.speed-options button{padding:11px 16px;border-radius:10px;border:2px solid var(--border);background:var(--card);color:var(--ink);text-align:left;cursor:pointer;font-size:.95rem;font-weight:600;font-family:inherit}
+.speed-options button:hover:not(:disabled){border-color:var(--blue-l)}.speed-options button.correct{background:#16a34a!important;border-color:#16a34a!important;color:#fff}.speed-options button.wrong{background:#dc2626!important;border-color:#dc2626!important;color:#fff}
+kbd{background:var(--bg);border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:0 5px;font-family:ui-monospace,monospace;font-size:.75rem;color:var(--ink)}
+.speed-result{text-align:center}.speed-result h3{font-size:2.4rem;color:var(--blue);margin:0}
+.helpgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:.88rem}
+/* thème sombre : surcharges des blocs à fond clair */
+[data-theme="dark"] .box.cours,[data-theme="dark"] .box.warn,[data-theme="dark"] .box.hypo,[data-theme="dark"] .box.guide,[data-theme="dark"] .eq-card,[data-theme="dark"] .fig-card,[data-theme="dark"] footer,[data-theme="dark"] table,[data-theme="dark"] details.ped[open]{background:var(--card)}
+[data-theme="dark"] .eq-card.mastered{background:#0f2a1c}
+[data-theme="dark"] .eq-principle,[data-theme="dark"] .eq-body,[data-theme="dark"] .pc,[data-theme="dark"] .step,[data-theme="dark"] .try-in,[data-theme="dark"] .calc-steps,[data-theme="dark"] .fig-controls,[data-theme="dark"] details.ped,[data-theme="dark"] .q5>div,[data-theme="dark"] .plot,[data-theme="dark"] tr:nth-child(even) td{background:var(--bg);color:var(--ink)}
+[data-theme="dark"] .quiz,[data-theme="dark"] .chal{background:#1e1b4b;border-color:#4338ca}[data-theme="dark"] .predict-card{background:#3b2a0b;border-color:#b45309}
+[data-theme="dark"] .quiz-q,[data-theme="dark"] .pr-q,[data-theme="dark"] .predict-card .pr-label{color:#e2e8f0}
+[data-theme="dark"] .mcq-opts button,[data-theme="dark"] .quiz-options button,[data-theme="dark"] .predict-options button{background:var(--card);color:var(--ink);border-color:var(--border)}
+[data-theme="dark"] .res,[data-theme="dark"] .fig-interpret{background:#0f2a1c;color:#bbf7d0}[data-theme="dark"] .note{background:#3b2a0b;color:#fde68a}
+[data-theme="dark"] .fb.ok{background:#0f2a1c;color:#bbf7d0}[data-theme="dark"] .fb.bad{background:#3b0f0f;color:#fecaca}[data-theme="dark"] .fb.info{background:#0c2a3d;color:#bae6fd}
+[data-theme="dark"] .tab.on,[data-theme="dark"] .eq-id,[data-theme="dark"] h2.st2,[data-theme="dark"] details.ped summary,[data-theme="dark"] label.inp .il,[data-theme="dark"] .nav-btn:hover{color:#93c5fd}
+[data-theme="dark"] .nav-btn{background:var(--card);color:var(--ink)}[data-theme="dark"] .nav-btn.active{background:var(--blue);color:#fff}
+[data-theme="dark"] .eq-id,[data-theme="dark"] .eq-fig{background:#1e3a8a;color:#dbeafe}[data-theme="dark"] .fig-title,[data-theme="dark"] .eq-title,[data-theme="dark"] h3,[data-theme="dark"] strong{color:#bfdbfe}
+[data-theme="dark"] label.inp input[type=number],[data-theme="dark"] .chal input[type=text]{background:var(--card);color:var(--ink);border-color:var(--border)}
+[data-theme="dark"] .specimen text{fill:#94a3b8}
+@media(max-width:700px){.funbar .ft{display:none}.navtools{margin-left:0;width:100%}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{.navtools,.modal,.toast,.dash-actions,.share-btn,.anim-ctrl{display:none}}
+</style>
+</head>
+<body>
+<div class="warnbar" id="cdnWarn">⚠️ <b>Bibliothèques externes non chargées</b> (MathJax / Plotly). Les équations peuvent apparaître en LaTeX brut et les figures manquer. Connectez-vous à Internet ou téléchargez les bibliothèques pour un usage hors ligne.</div>
+<header class="top">
+  <span class="tag">Chapitre 1 · Version interactive v8</span>
+  <h1>Introduction au calcul anélastique des structures</h1>
+  <p>Université Abbes Laghrour Khenchela · Plasticité &amp; Endommagement — Master 2 Structure · Dr. TABET Mohamed · 2026–2027</p>
+</header>
+<nav class="chnav">
+  <span class="nav-label">Sections</span>
+  <a class="nav-btn active" href="#s1-1">1.1</a><a class="nav-btn" href="#s1-2">1.2</a><a class="nav-btn" href="#s1-3">1.3</a><a class="nav-btn" href="#s1-4">1.4</a><a class="nav-btn" href="#s1-5">1.5 · Bilan</a>
+  <div class="navtools">
+    <div class="funbar" id="funbar" aria-label="Niveau et expérience"></div>
+    <div class="progress" title="Fiches maîtrisées / explorées"><span id="progTxt">0 / 0</span><div class="pbar"><div class="a" id="progA"></div><div class="b" id="progB"></div></div></div>
+    <button class="ibtn" id="btnSpeed" aria-label="Round éclair" title="Round éclair (S)">⚡</button>
+    <button class="ibtn" id="btnTheme" aria-label="Changer de thème" title="Thème (D)">🌙</button>
+    <button class="ibtn" id="btnSound" aria-label="Activer ou couper le son" title="Son">🔊</button>
+    <button class="ibtn" id="btnHelp" aria-label="Aide" title="Aide (?)">?</button>
+  </div>
+
+<div class="box dash" id="dashboard"><span class="lab">Tableau de bord</span>
+<div class="dash-tiles" id="dash-tiles"></div><div id="dash-rec"></div><div id="dash-due" style="margin-top:8px"></div>
+<details class="ped"><summary>▸ Détail par fiche</summary><div class="mgrid" id="dash-grid"></div></details>
+<div class="dash-actions"><button class="btn" id="btnReview">🔁 Révision ciblée</button><button class="btn sec" id="btnExport">⬇ Exporter ma progression (JSON)</button><button class="btn sec" id="btnReset">Réinitialiser</button></div>
+<p class="fig-note"><b>Comment est calculée la maîtrise ?</b> Une fiche est « maîtrisée » quand vous avez exploré tous ses onglets <i>et</i> que votre score récent est ≥ 80 %. Le score pondère vos 8 dernières réponses (les plus récentes comptent davantage), exige au moins 3 réponses et baisse si vous tardez à réviser. Les intervalles de révision s'allongent quand vous réussissez et raccourcissent quand vous échouez (principe de la répétition espacée). Les XP ne récompensent que la première réponse à chaque question.</p></div>
+
+<!-- ================= 1.1 ================= -->
+<section id="s1-1" class="chs">
+<h2 class="st2">1.1 — Pourquoi le calcul anélastique ?</h2>
+<div class="box cours"><span class="lab">Principe</span>
+<p>Le calcul élastique impose \(\sigma_{\max}\le\sigma_e\) partout. Il <b>sur-dimensionne</b> (on ignore la réserve de ductilité), <b>ne décrit pas la ruine réelle</b> d'une structure hyperstatique (qui survient par formation d'un mécanisme, bien après la première plastification) et n'est <b>pas optimal économiquement</b>.</p></div>
+<div class="slot" data-card="PR-2"></div>
+<div class="slot" data-card="EQ-1-00"></div>
+<div class="slot" data-card="EQ-1-01"></div>
+<div class="box hypo"><span class="lab">Hypothèses de l'exemple</span>
+<p><b>Rapport de ductilité ≈ 200×</b> : exemple pour un acier doux avec \(\varepsilon_u^{p}\approx0{,}20\) et \(\varepsilon_e\approx0{,}001\). Il <b>n'est pas universel</b> (nuance, traitement, section, chargement). Les économies annoncées (15–50 %) sont des ordres de grandeur dépendant de l'hyperstaticité et de la forme de section.</p></div>
+
+<div class="fig-card" id="fig-1-01">
+<div class="fig-head"><span class="fig-id">FIG-1-01</span><span class="fig-title">Les 4 phases du comportement d'un acier doux en traction (schématique)</span></div>
+<div class="predict-card"><div class="pr-label">Prédire avant de manipuler</div>
+<div class="pr-q">Si on augmente \(E\) à \(\sigma_e\) constant, la déformation élastique \(\varepsilon_e=\sigma_e/E\) …</div>
+<div class="predict-options"><button data-ans="dim">diminue</button><button data-ans="aug">augmente</button><button data-ans="same">reste identique</button></div>
+<div class="fb" data-correct="dim" data-ok="✓ Exact. \(\varepsilon_e=\sigma_e/E\) : \(E\) est au dénominateur, un matériau plus rigide se déforme moins au même seuil." data-bad="✗ Regardez \(\varepsilon_e=\sigma_e/E\) : \(E\) est au dénominateur, donc l'augmenter fait diminuer \(\varepsilon_e\)."></div></div>
+<div class="fig-controls" data-p="f101-" data-spec="sige|σe|150|500|5|235|MPa;E|E|150000|250000|5000|210000|MPa;Et|E_T|500|8000|100|2000|MPa;eu|ε_u|0.05|0.35|0.01|0.2|"></div>
+<div id="plot-f101" class="plot tall"></div><div class="fig-interpret" id="interp-f101"></div>
+<div class="anim-ctrl"><button class="btn play" id="trac-play">▶ Simuler l'essai</button><button class="btn sec" id="trac-reset">↺ Début</button><input type="range" class="slider-t" id="trac-t" min="0" max="100" step="1" value="0" aria-label="Avancement de l'essai"><span class="tval">ε = <span id="trac-eps">0</span></span></div>
+<svg id="trac-specimen" class="specimen" viewBox="0 0 400 100" role="img" aria-label="Éprouvette en traction"></svg>
+<div class="fig-interpret" id="trac-interp" aria-live="polite"></div>
+<div class="fig-note">Les phases 3 et 4 sont tracées de façon schématique (la striction est représentée par une droite descendante arbitraire).</div></div>
+
+<h4>Identification des paramètres</h4>
+<table><tr><th>Symbole</th><th>Désignation</th><th>Unité</th><th>Explication</th></tr>
+<tr><td>\(\sigma_e\)</td><td>Limite d'élasticité</td><td>MPa</td><td>Seuil de plastification (235 MPa pour S235)</td></tr>
+<tr><td>\(\sigma_u\)</td><td>Contrainte ultime</td><td>MPa</td><td>Contrainte max avant striction</td></tr>
+<tr><td>\(\varepsilon^e,\varepsilon^p\)</td><td>Déformations élastique / plastique</td><td>–</td><td>Réversible / irréversible</td></tr>
+<tr><td>\(E_T\)</td><td>Module tangent</td><td>MPa</td><td>Pente post-élastique</td></tr></table>
+
+<h3>1.1.3 — Exemple comparatif : calcul élastique détaillé</h3>
+<div class="box cours"><span class="lab">Exemple 1.1</span>
+<p><b>Poutre isostatique chargée au centre.</b> \(L=6\) m, section rectangulaire \(b=200\) mm, \(h=400\) mm, \(\sigma_e=235\) MPa, \(E=210\,000\) MPa. Déterminer \(M(x)\), \(M_{\max}\), \(\sigma_{\max}\), puis \(P_{\max}\) en élasticité.</p></div>
+<div class="slot" data-card="PR-1"></div>
+<div class="slot" data-card="EQ-1-02"></div>
+<div class="slot" data-card="EQ-1-03"></div>
+
+<div class="fig-card" id="fig-1-02">
+<div class="fig-head"><span class="fig-id">FIG-1-02</span><span class="fig-title">Exemple 1.1 — Diagramme M(x) et distribution σ(z)</span></div>
+<div class="predict-card"><div class="pr-label">Prédire avant de manipuler</div>
+<div class="pr-q">Si on double la hauteur \(h\) (largeur et portée constantes), \(W_{el}=bh^2/6\) est multiplié par …</div>
+<div class="predict-options"><button data-ans="2">2</button><button data-ans="4">4</button><button data-ans="8">8</button></div>
+<div class="fb" data-correct="4" data-ok="✓ Exact. \(W_{el}\propto h^2\) : doubler \(h\) multiplie par \(2^2=4\). D'où les sections hautes en flexion." data-bad="✗ \(W_{el}=bh^2/6\) dépend de \(h^2\) : doubler \(h\) multiplie par 4."></div></div>
+<div class="fig-controls" data-p="f102-" data-spec="L|L|3|10|0.5|6|m;b|b|100|400|10|200|mm;h|h|200|600|10|400|mm;P|P|0|1500|10|835|kN;sige|σe|150|400|5|235|MPa"></div>
+<div class="grid2"><div id="plot-f102a" class="plot"></div><div id="plot-f102b" class="plot"></div></div>
+<div class="fig-interpret" id="interp-f102"></div></div>
+
+<div class="tool-card" id="tool-solver"><div class="tool-head"><span class="tool-badge">Interactif</span><span class="tool-title">Solveur guidé — de l'élasticité à la ruine plastique</span></div>
+<div class="tool-hint">Résolvez l'exemple pas à pas (tolérance 0,5 %). En cas d'erreur, un diagnostic détecte les confusions d'unités (×10⁶, ×1000) ou de facteur. « Nouvel exemple » tire de nouvelles données.</div>
+<p id="gs-params" style="font-weight:600"></p><div id="gs-steps"></div><div class="gs-bar"><i id="gs-bar"></i></div>
+<div class="dash-actions"><button class="btn sec" id="gs-new">🎲 Nouvel exemple</button><button class="btn sec" id="gs-reset">↺ Exemple 1.1</button></div></div>
+
+<div class="tool-card" id="tool-beam"><div class="tool-head"><span class="tool-badge">Interactif</span><span class="tool-title">Explorateur de poutre — charge mobile</span></div>
+<div class="tool-hint">Déplacez la charge (a/L) puis la section étudiée (x/L). Question : où M<sub>max</sub> est-il le plus grand, et pourquoi la charge centrée est-elle le cas le plus défavorable ?</div>
+<div class="fig-controls" data-p="bx-" data-spec="a|a/L|0.05|0.95|0.01|0.5|;x|x/L|0|1|0.01|0.5|;L|L|3|10|0.5|6|m;P|P|0|1500|10|835|kN;b|b|100|400|10|200|mm;h|h|200|600|10|400|mm;se|σe|150|400|5|235|MPa"></div>
+<div class="grid2"><div id="plot-bxM" class="plot" style="height:290px"></div><div id="plot-bxS" class="plot" style="height:290px"></div></div><div class="fig-interpret" id="interp-bx"></div></div>
+
+<h3>Exercice 1.1 — Barre homogène sous traction</h3>
+<div class="box cours"><span class="lab">Exercice 1.1</span><p>Barre \(b=20\) mm, \(h=30\) mm, \(L=2\) m, traction \(N\). \(\sigma_e=235\) MPa, \(E=210\,000\) MPa. Calculer \(S\), \(N_e\), \(\Delta L_e\), puis discuter \(N=1{,}5N_e\).</p></div>
+<div class="slot" data-card="EQ-1-04"></div>
+<div class="fig-card" id="fig-1-03">
+<div class="fig-head"><span class="fig-id">FIG-1-03</span><span class="fig-title">Exercice 1.1 — Courbe N–ΔL</span></div>
+<div class="fig-controls" data-p="f103-" data-spec="sige|σe|150|400|5|235|MPa;E|E|150000|250000|5000|210000|MPa;S|S|100|1200|50|600|mm²;L|L|500|4000|100|2000|mm"></div>
+<div id="plot-f103" class="plot"></div><div class="fig-interpret" id="interp-f103"></div></div>
+<details class="ped"><summary>▸ Solution détaillée — Exercice 1.1</summary>
+<p>\(S=20\times30=600\) mm². \(N_e=235\times600=141\,000\) N \(=141\) kN (MPa·mm² = N ✓).</p>
+<p>\(\varepsilon_e=235/210\,000=1{,}119\times10^{-3}\) ; \(\Delta L_e=1{,}119\times10^{-3}\times2000=2{,}238\) mm.</p>
+<p>\(N=1{,}5N_e=211{,}5\) kN : la barre plastifie à charge constante \(N_e=141\) kN ; elle ne peut pas reprendre 211,5 kN (allongement plastique illimité en modèle EPP). Gain \(N_p/N_e=1\) : aucun gain plastique en traction homogène.</p></details>
+
+<h3>1.1.4 — Au-delà de la limite élastique : moment plastique et rotule</h3>
+<div class="box cours"><span class="lab">Pourquoi cette section ?</span><p>La traction homogène ne donne aucun gain plastique. <b>En flexion</b>, seules les fibres extrêmes sont à \(\sigma_e\) au début : il reste de la réserve. C'est elle que le calcul anélastique exploite (gain de 50 % pour un rectangle).</p></div>
+<div class="slot" data-card="PR-3"></div>
+<div class="slot" data-card="EQ-1-21"></div>
+<div class="slot" data-card="EQ-1-22"></div>
+<div class="fig-card" id="fig-1-12">
+<div class="fig-head"><span class="fig-id">FIG-1-12</span><span class="fig-title">Plastification progressive d'une section rectangulaire (modèle EPP)</span></div>
+<div class="predict-card"><div class="pr-label">Prédire avant de manipuler</div>
+<div class="pr-q">Le facteur de forme \(f=M_p/M_e\) d'une section rectangulaire vaut :</div>
+<div class="predict-options"><button data-ans="1">1,0</button><button data-ans="1.5">1,5</button><button data-ans="2">2,0</button></div>
+<div class="fb" data-correct="1.5" data-ok="✓ Exact. \(f=(bh^2/4)/(bh^2/6)=3/2\). Faites glisser \(M/M_e\) jusqu'à 1,5 : le cœur élastique disparaît et la rotule se forme." data-bad="✗ \(f=Z_{pl}/W_{el}=(bh^2/4)/(bh^2/6)=1{,}5\)."></div></div>
+<div class="fig-controls" data-p="f112-" data-spec="m|M/Me|0|1.49|0.01|1.2|;b|b|100|400|10|200|mm;h|h|200|600|10|400|mm;sige|σe|150|400|5|235|MPa"></div>
+<div class="grid2"><div id="plot-f112a" class="plot tall"></div><div id="plot-f112b" class="plot tall"></div></div>
+<div class="fig-interpret" id="interp-f112"></div>
+<div class="fig-note">Les sections restent planes (Bernoulli) : ε reste linéaire, mais σ est écrêté à ±σe dans les zones plastifiées.</div></div>
+
+<div class="quiz" data-correct="c" data-ok="✓ Exact. σ = Eε : à ε constant, σ est proportionnelle à E." data-bad="✗ σ = Eε : E est en facteur direct, doubler E double σ."><div class="quiz-q">Quiz 1.1 — Dans le modèle de Hooke, si on double \(E\) à déformation imposée, la contrainte…</div><div class="quiz-options"><button data-ans="a">a) reste constante</button><button data-ans="b">b) est divisée par 2</button><button data-ans="c">c) est doublée</button></div><div class="fb"></div></div>
+<div class="quiz" data-correct="b" data-ok="✓ Exact. Toutes les fibres plastifient simultanément : Np = Ne." data-bad="✗ Section homogène en traction : Np = Ne."><div class="quiz-q">Quiz 1.1 bis — Section homogène en traction : \(N_p\) par rapport à \(N_e\) est…</div><div class="quiz-options"><button data-ans="a">a) plus grande</button><button data-ans="b">b) égale</button><button data-ans="c">c) plus petite</button></div><div class="fb"></div></div>
+</section>
+
+<!-- ================= 1.2 ================= -->
+<section id="s1-2" class="chs">
+<h2 class="st2">1.2 — Modèles rhéologiques</h2>
+<h3>1.2.1 — Les trois éléments de base</h3>
+<div class="box cours"><span class="lab">Principe</span><p>Les modèles rhéologiques se construisent avec : le <b>ressort</b> (élasticité, stocke l'énergie), l'<b>amortisseur</b> (viscosité, dissipe en chaleur) et le <b>patin</b> (plasticité, dissipe par frottement).</p></div>
+<div class="slot" data-card="EQ-1-05"></div>
+<div class="fig-card" id="fig-1-04"><div class="fig-head"><span class="fig-id">FIG-1-04</span><span class="fig-title">Les trois éléments rhéologiques de base</span></div>
+<svg viewBox="0 0 700 130" style="width:100%;height:auto;background:#fafbfc;border-radius:8px" role="img" aria-label="Ressort, amortisseur, patin">
+<g transform="translate(20,55)"><line x1="0" y1="0" x2="30" y2="0" stroke="#1e3a8a" stroke-width="3"/><path d="M30 0 L40 -18 L50 18 L60 -18 L70 18 L80 -18 L90 18 L100 0" fill="none" stroke="#1e3a8a" stroke-width="3"/><line x1="100" y1="0" x2="130" y2="0" stroke="#1e3a8a" stroke-width="3"/><text x="65" y="40" text-anchor="middle" font-size="13" fill="#1e3a8a" font-weight="700">Ressort</text><text x="65" y="55" text-anchor="middle" font-size="12" fill="#1e3a8a">σ = Eε</text></g>
+<g transform="translate(240,55)"><line x1="0" y1="0" x2="30" y2="0" stroke="#0ea5e9" stroke-width="3"/><rect x="30" y="-22" width="60" height="44" fill="rgba(14,165,233,.2)" stroke="#0ea5e9" stroke-width="3"/><line x1="90" y1="0" x2="120" y2="0" stroke="#0ea5e9" stroke-width="3"/><text x="60" y="40" text-anchor="middle" font-size="13" fill="#0ea5e9" font-weight="700">Amortisseur</text><text x="60" y="55" text-anchor="middle" font-size="12" fill="#0ea5e9">σ = ηε̇</text></g>
+<g transform="translate(460,55)"><line x1="0" y1="0" x2="20" y2="0" stroke="#dc2626" stroke-width="3"/><rect x="20" y="-18" width="70" height="36" rx="4" fill="rgba(220,38,38,.15)" stroke="#dc2626" stroke-width="3"/><line x1="90" y1="0" x2="110" y2="0" stroke="#dc2626" stroke-width="3"/><line x1="20" y1="28" x2="90" y2="28" stroke="#374151" stroke-width="2"/><text x="55" y="45" text-anchor="middle" font-size="13" fill="#dc2626" font-weight="700">Patin</text><text x="55" y="60" text-anchor="middle" font-size="12" fill="#dc2626">|σ| ≤ σs</text></g></svg></div>
+
+<div class="slot" data-card="PR-4"></div>
+<h3>1.2.2 — Modèle de Maxwell (ressort + amortisseur en série)</h3>
+<div class="slot" data-card="EQ-1-06"></div>
+<div class="slot" data-card="EQ-1-07"></div>
+<div class="slot" data-card="EQ-1-08"></div>
+<div class="fig-card" id="fig-1-05"><div class="fig-head"><span class="fig-id">FIG-1-05</span><span class="fig-title">Maxwell — fluage et relaxation côte à côte</span></div>
+<div class="predict-card"><div class="pr-label">Prédire avant de manipuler</div>
+<div class="pr-q">En relaxation de Maxwell, si on augmente la viscosité \(\eta\), la contrainte à un instant \(t\) donné…</div>
+<div class="predict-options"><button data-ans="dec">décroît plus lentement</button><button data-ans="inc">décroît plus vite</button><button data-ans="same">reste identique</button></div>
+<div class="fb" data-correct="dec" data-ok="✓ Exact. \(\tau=\eta/E\) augmente, donc \(e^{-t/\tau}\) décroît plus lentement." data-bad="✗ L'exposant est \(-Et/\eta\) : augmenter \(\eta\) le rend moins négatif, la décroissance est plus lente."></div></div>
+<div class="fig-controls" data-p="f105-" data-spec="E|E|50000|300000|5000|200000|MPa;eta|η|1e7|5e9|1e7|1e9|MPa·s;s0|σ0|20|200|5|100|MPa"></div>
+<div class="grid2"><div id="plot-f105a" class="plot"></div><div id="plot-f105b" class="plot"></div></div><div class="fig-interpret" id="interp-f105"></div></div>
+<details class="ped"><summary>▸ Solution — Exercice 1.2 (identification Maxwell)</summary>
+<p>Données : \(\sigma_0=50\) MPa, \(\varepsilon(t)=2\times10^{-3}+1{,}5\times10^{-6}t\). Forme \(A+Bt\) avec \(A\ne0\) : Maxwell (Kelvin-Voigt impose \(\varepsilon(0)=0\)).</p>
+<p>\(E=\sigma_0/A=50/0{,}002=25\,000\) MPa ; \(\eta=\sigma_0/B=50/(1{,}5\times10^{-6})=3{,}33\times10^7\) MPa·s ; \(\varepsilon(1000)=3{,}5\times10^{-3}\). Fluage illimité.</p></details>
+<details class="ped"><summary>▸ Solution — Exercice 1.3 (relaxation Maxwell)</summary>
+<p>\(E=200\,000\) MPa, \(\eta=10^9\) MPa·s, \(\varepsilon_0=2\times10^{-3}\). \(\sigma(0)=400\) MPa ; \(E/\eta=2\times10^{-4}\,\text{s}^{-1}\).</p>
+<p>\(\sigma(3600)=400\,e^{-0{,}72}=194{,}7\) MPa (chute de 51,3 %). <i>(Corrigé : 194,6 / 51,4 % dans la version précédente.)</i></p></details>
+
+<h3>1.2.3 — Modèle de Kelvin-Voigt (ressort + amortisseur en parallèle)</h3>
+<div class="slot" data-card="EQ-1-09"></div>
+<div class="slot" data-card="EQ-1-10"></div>
+<div class="slot" data-card="EQ-1-11"></div>
+<div class="fig-card" id="fig-1-06"><div class="fig-head"><span class="fig-id">FIG-1-06</span><span class="fig-title">Kelvin-Voigt — fluage limité et temps caractéristique τ</span></div>
+<div class="predict-card"><div class="pr-label">Prédire avant de manipuler</div><div class="pr-q">Le fluage de Kelvin-Voigt est-il limité ou illimité quand \(t\to\infty\) ?</div>
+<div class="predict-options"><button data-ans="lim">limité (asymptote σ0/E)</button><button data-ans="illim">illimité (diverge)</button></div>
+<div class="fb" data-correct="lim" data-ok="✓ Exact. \(\varepsilon\to\sigma_0/E\) : le ressort en parallèle finit par supporter toute la charge." data-bad="✗ Quand \(t\to\infty\), \(e^{-t/\tau}\to0\) et \(\varepsilon\to\sigma_0/E\) (valeur finie)."></div></div>
+<div class="fig-controls" data-p="f106-" data-spec="E|E|500|5000|100|2000|MPa;eta|η|1e5|1e6|1e4|5e5|MPa·s;s0|σ0|5|60|1|20|MPa"></div>
+<div id="plot-f106" class="plot"></div><div class="fig-interpret" id="interp-f106"></div></div>
+
+<div class="tool-card" id="tool-visco"><div class="tool-head"><span class="tool-badge">Interactif</span><span class="tool-title">Comparateur Maxwell / Kelvin-Voigt</span></div>
+<div class="tool-hint">Fluage : on impose σ₀ (ε<sub>∞</sub> = σ₀/E pour K-V). Relaxation : on impose ε₀ (K-V garde σ = Eε₀). Animez le temps pour voir qui « fuit » et qui « se bloque ».</div>
+<div class="fig-controls" data-p="vc-" data-spec="E|E|50000|300000|5000|200000|MPa;eta|η|1e7|5e9|1e7|1e9|MPa·s;s0|σ₀ (fluage)|20|200|5|100|MPa;e0|ε₀ (relaxation)|0.0005|0.004|0.0001|0.002|"></div>
+<div class="anim-ctrl"><button class="btn play" id="vc-play">▶ Animer</button><button class="btn sec" id="vc-reset">↺ t = 0</button><input type="range" class="slider-t" id="vc-t" min="0" max="100" step="1" value="0" aria-label="Temps"><span class="tval">t = <span id="vc-tshow">0</span> s</span></div>
+<div class="grid2"><div id="plot-vcC" class="plot" style="height:290px"></div><div id="plot-vcR" class="plot" style="height:290px"></div></div><div class="fig-interpret" id="interp-vc"></div></div>
+<details class="ped"><summary>▸ Solution — Exercice 1.4 (Kelvin-Voigt)</summary>
+<p>\(E=2000\) MPa, \(\eta=5\times10^5\) MPa·s, \(\sigma_0=20\) MPa : \(\varepsilon(t)=0{,}01(1-e^{-t/250})\) ; \(\tau=250\) s ; \(\varepsilon(\tau)=6{,}32\times10^{-3}\).</p></details>
+
+<h3>1.2.4 — Modèles élasto-plastiques : RPP, EPP, RPE, EPE</h3>
+<div class="box warn"><span class="lab">Conventions explicites</span>
+<ul><li><b>RPP :</b> segment vertical \((0,0)\to(0,\sigma_s)\) puis horizontal.</li><li><b>EPP :</b> pente \(E\) jusqu'à \((\sigma_s/E,\sigma_s)\), puis horizontal.</li><li><b>RPE :</b> segment vertical \((0,0)\to(0,\sigma_s)\) puis pente \(E_T\).</li><li><b>EPE :</b> pente \(E\) puis pente \(E_T\). Le module d'écrouissage \(k\) relie \(d\sigma\) et \(d\varepsilon^p\) : ce n'est <b>pas</b> la pente de la courbe \(\sigma\)–\(\varepsilon\).</li></ul></div>
+<div class="slot" data-card="EQ-1-12"></div>
+<div class="slot" data-card="EQ-1-13"></div>
+<div class="fig-card" id="fig-1-07"><div class="fig-head"><span class="fig-id">FIG-1-07</span><span class="fig-title">Les quatre modèles élasto-plastiques</span></div>
+<div class="fig-controls" data-p="f107-" data-spec="sige|σs|150|400|5|235|MPa;E|E|100000|250000|5000|210000|MPa;Et|E_T|500|8000|100|2000|MPa"></div>
+<div id="plot-f107" class="plot tall"></div><div class="fig-interpret" id="interp-f107"></div></div>
+
+<h3>1.2.5 — Module d'écrouissage</h3>
+<div class="slot" data-card="EQ-1-14"></div>
+<div class="fig-card" id="fig-1-08"><div class="fig-head"><span class="fig-id">FIG-1-08</span><span class="fig-title">Module d'écrouissage k sur modèle bilinéaire</span></div>
+<div class="predict-card"><div class="pr-label">Prédire avant de manipuler</div><div class="pr-q">Si \(E_T\to0\) (plasticité parfaite), \(k=EE_T/(E-E_T)\) tend vers …</div>
+<div class="predict-options"><button data-ans="inf">+∞</button><button data-ans="0">0</button><button data-ans="E">E</button></div>
+<div class="fb" data-correct="0" data-ok="✓ Exact. Numérateur → 0, dénominateur → E : k → 0. C'est la plasticité parfaite : aucun écrouissage, la contrainte n'augmente plus." data-bad="✗ Si \(E_T\to0\), le numérateur tend vers 0 donc \(k\to0\) (plasticité parfaite)."></div></div>
+<div class="fig-controls" data-p="f108-" data-spec="E|E|150000|250000|5000|210000|MPa;Et|E_T|500|8000|100|2100|MPa;s0|σ0|150|400|5|235|MPa"></div>
+<div id="plot-f108" class="plot"></div><div class="fig-interpret" id="interp-f108"></div></div>
+<details class="ped"><summary>▸ Solution — Exercice 1.5</summary><p>\(k=210\,000\times2100/207\,900=2121\) MPa ; \(\sigma(\varepsilon^p=0{,}01)=235+21{,}2=256{,}2\) MPa (+9 %).</p></details>
+<div class="quiz" data-correct="b" data-ok="✓ Exact. En parallèle, le ressort supporte toute la contrainte quand t→∞ : ε(∞)=σ0/E." data-bad="✗ C'est le ressort en parallèle qui, à long terme, supporte toute la charge."><div class="quiz-q">Quiz 1.2 — Le fluage de Kelvin-Voigt est limité parce que :</div><div class="quiz-options"><button data-ans="a">a) l'amortisseur empêche toute déformation</button><button data-ans="b">b) le ressort en parallèle bloque la déformation à long terme</button><button data-ans="c">c) la viscosité tend vers zéro</button></div><div class="fb"></div></div>
+</section>
+
+<!-- ================= 1.3 ================= -->
+<section id="s1-3" class="chs">
+<h2 class="st2">1.3 — Critères de plasticité tridimensionnels</h2>
+<h3>1.3.1 — Tresca</h3><div class="slot" data-card="EQ-1-15"></div>
+<h3>1.3.2 — von Mises</h3><div class="slot" data-card="EQ-1-16"></div>
+<div class="box warn"><span class="lab">Représentation 2D</span>
+<p>En contraintes planes (\(\sigma_3=0\)), la frontière de von Mises est l'<b>ellipse</b> \(\sigma_1^2-\sigma_1\sigma_2+\sigma_2^2=\sigma_e^2\) (pas un cercle). Tresca est l'hexagone de sommets \((\sigma_e,0),(\sigma_e,\sigma_e),(0,\sigma_e),(-\sigma_e,0),(-\sigma_e,-\sigma_e),(0,-\sigma_e)\).</p></div>
+<h3>1.3.3 — Drucker-Prager</h3><div class="slot" data-card="EQ-1-17"></div>
+<div class="fig-card" id="fig-1-09"><div class="fig-head"><span class="fig-id">FIG-1-09</span><span class="fig-title">Surfaces de plasticité — Tresca, von Mises (ellipse), Drucker-Prager</span></div>
+<div class="predict-card"><div class="pr-label">Prédire avant de manipuler</div><div class="pr-q">En contraintes planes, la frontière de von Mises dans le plan \((\sigma_1,\sigma_2)\) est :</div>
+<div class="predict-options"><button data-ans="circ">un cercle</button><button data-ans="ell">une ellipse</button><button data-ans="hex">un hexagone</button></div>
+<div class="fb" data-correct="ell" data-ok="✓ Exact. \(\sigma_1^2-\sigma_1\sigma_2+\sigma_2^2=\sigma_e^2\) : ellipse d'axes à 45°. L'hexagone est Tresca." data-bad="✗ C'est une ellipse (pas un cercle) ; l'hexagone est Tresca."></div></div>
+<div class="fig-controls" data-p="f109-" data-spec="sige|σe|100|400|5|235|MPa;alpha|α (D-P)|0|0.3|0.01|0.1|"></div>
+<div id="plot-f109" class="plot tall"></div><div class="fig-interpret" id="interp-f109"></div></div>
+
+<div class="tool-card" id="tool-yield"><div class="tool-head"><span class="tool-badge">Interactif</span><span class="tool-title">Explorateur de critères — marge de sécurité</span></div>
+<div class="tool-hint">Placez un état de contrainte (curseurs ou clic sur le graphique). Le tableau donne le verdict de chaque critère et le <b>facteur de charge λ*</b> : de combien faut-il multiplier le chargement pour plastifier ?</div>
+<div class="yield-presets"><button data-preset="traction">Traction σe</button><button data-preset="compression">Compression</button><button data-preset="shear">Cisaillement pur</button><button data-preset="biaxial">Biaxial ++</button><button data-preset="pm">Biaxial +−</button><button data-preset="zero">Origine</button></div>
+<div class="fig-controls" data-p="yx-" data-spec="se|σe|100|400|5|200|MPa;s1|σ₁|-400|400|5|140|MPa;s2|σ₂|-400|400|5|40|MPa;al|α (D-P)|0|0.3|0.01|0.1|"></div>
+<div class="yield-grid"><div id="plot-yx" class="plot" style="height:400px"></div><div id="yx-read" aria-live="polite"></div></div></div>
+<details class="ped"><summary>▸ Solution — Exercice 1.6 (Mohr)</summary>
+<p>\(\sigma_x=120,\ \sigma_y=60,\ \tau_{xy}=40,\ \sigma_e=200\) MPa. Centre 90, rayon \(R=\sqrt{30^2+40^2}=50\) ⇒ \(\sigma_1=140,\ \sigma_2=40,\ \sigma_3=0\).</p>
+<p>Tresca : \(\tau_{\max}=(140-0)/2=70\) MPa \(<k=100\) MPa (et non 50 : il faut les trois contraintes principales). von Mises : \(\sigma_{eq}=\sqrt{15\,600}=124{,}9<200\) MPa. Pas de plastification ; Tresca (140) est plus conservateur que vM (124,9).</p></details>
+<div class="fig-card" id="fig-1-10"><div class="fig-head"><span class="fig-id">FIG-1-10</span><span class="fig-title">Cercles de Mohr 3D — Exercice 1.6</span></div>
+<div class="fig-controls" data-p="f110-" data-spec="sx|σx|0|250|5|120|MPa;sy|σy|-100|200|5|60|MPa;txy|τxy|0|150|5|40|MPa;sige|σe|100|400|5|200|MPa"></div>
+<div id="plot-f110" class="plot tall"></div><div class="fig-interpret" id="interp-f110"></div></div>
+<details class="ped"><summary>▸ Solution — Exercice 1.7 (Tresca vs von Mises 3D)</summary>
+<p>\(\sigma=(200,100,-50)\), \(\sigma_e=300\) MPa. Tresca : \(\tau_{\max}=125<150\). von Mises : \(\sqrt{\tfrac12[100^2+150^2+250^2]}=\sqrt{47\,500}=217{,}9<300\). Pas de plastification.</p></details>
+<div class="quiz" data-correct="b" data-ok="✓ τmax = (σ1 − σ3)/2 = (140 − 0)/2 = 70 MPa : en contraintes planes σ3 = 0, pas σ2." data-bad="✗ En contraintes planes σ3 = 0 : τmax = (140 − 0)/2 = 70 MPa."><div class="quiz-q">Quiz 1.3 — Contraintes planes, σ1=140 MPa, σ2=40 MPa : τmax (3D) vaut :</div><div class="quiz-options"><button data-ans="a">a) 50 MPa</button><button data-ans="b">b) 70 MPa</button><button data-ans="c">c) 140 MPa</button></div><div class="fb"></div></div>
+</section>
+
+<!-- ================= 1.4 ================= -->
+<section id="s1-4" class="chs">
+<h2 class="st2">1.4 — Contrainte effective et endommagement</h2>
+<div class="box cours"><span class="lab">Principe</span><p>L'endommagement est la <b>dégradation progressive</b> de la capacité portante, représentée ici par une variable scalaire \(D\) (modèle isotrope de Kachanov–Lemaître).</p></div>
+<div class="box warn"><span class="lab">Hypothèses du modèle</span><p>\(\tilde\sigma=\sigma/(1-D)\) n'est valable que pour un endommagement <b>isotrope scalaire</b>. Matériaux anisotropes, endommagement orienté ou effet unilatéral (refermeture des fissures en compression) exigent des modèles tensoriels.</p></div>
+<div class="slot" data-card="EQ-1-18"></div><div class="slot" data-card="EQ-1-19"></div><div class="slot" data-card="EQ-1-20"></div>
+<div class="fig-card" id="fig-1-11"><div class="fig-head"><span class="fig-id">FIG-1-11</span><span class="fig-title">Contrainte effective σ̃/σ en fonction de D</span></div>
+<div class="predict-card"><div class="pr-label">Prédire avant de manipuler</div><div class="pr-q">Quand \(D\to1\), \(\tilde\sigma=\sigma/(1-D)\) tend vers :</div>
+<div class="predict-options"><button data-ans="zero">0</button><button data-ans="finite">une valeur finie</button><button data-ans="inf">+∞</button></div>
+<div class="fb" data-correct="inf" data-ok="✓ Exact. \((1-D)\to0\) fait diverger \(\tilde\sigma\) ; en pratique la rupture survient avant." data-bad="✗ Le dénominateur \((1-D)\) tend vers 0 : \(\tilde\sigma\to+\infty\)."></div></div>
+<div class="fig-controls" data-p="f111-" data-spec="D|D|0|0.95|0.01|0.15|;sig|σ nominal|100|500|10|350|MPa"></div>
+<div id="plot-f111" class="plot tall"></div><div class="fig-interpret" id="interp-f111"></div></div>
+
+<div class="tool-card" id="tool-damage"><div class="tool-head"><span class="tool-badge">Interactif</span><span class="tool-title">Visualiseur d'endommagement</span></div>
+<div class="tool-hint">Les cavités apparaissent à mesure que D augmente. Observez σ̃ et la déformation, et surtout l'alerte quand σ̃ dépasse σe : la formule élastique ε = σ̃/E cesse alors d'être valable.</div>
+<div class="fig-controls" data-p="dv-" data-spec="D|D|0|0.95|0.01|0.15|;sig|σ nominal|100|500|10|350|MPa;E|E|150000|250000|5000|210000|MPa;se|σe|200|500|10|400|MPa"></div>
+<div class="dv-grid"><div><svg id="dv-svg" class="dv-svg" viewBox="0 0 300 300" role="img" aria-label="Section avec cavités"></svg></div><div id="plot-dv" class="plot" style="height:300px"></div></div><div class="fig-interpret" id="interp-dv" aria-live="polite"></div></div>
+<details class="ped"><summary>▸ Solution — Exercice 1.8 (éprouvette endommagée) — corrigée</summary>
+<p>\(E=210\,000\), \(\sigma_e=400\) MPa, \(D=0{,}15\), \(\sigma=350\) MPa. \(\tilde\sigma=350/0{,}85=411{,}8\) MPa.</p>
+<p>Déformation <i>si le matériau sain restait élastique</i> : \(\varepsilon=411{,}8/210\,000=1{,}96\times10^{-3}\) (+17,6 % par rapport à \(1{,}67\times10^{-3}\)).</p>
+<p><b>Mais</b> \(\tilde\sigma=411{,}8>\sigma_e=400\) MPa : la partie saine plastifie, donc \(\varepsilon=\tilde\sigma/E\) n'est <b>plus valable</b> ; la déformation réelle est supérieure (elle inclut \(\varepsilon^p\)).</p></details>
+<div class="quiz" data-correct="b" data-ok="✓ C'est un modèle isotrope scalaire simplifié ; pour l'anisotropie ou l'effet unilatéral il faut des modèles tensoriels." data-bad="✗ Ce n'est pas universel : modèle isotrope scalaire."><div class="quiz-q">Quiz 1.4 — La relation σ̃=σ/(1−D) est valable :</div><div class="quiz-options"><button data-ans="a">a) pour tous les matériaux et tous les états de contrainte</button><button data-ans="b">b) dans le cadre d'un modèle isotrope scalaire d'endommagement</button><button data-ans="c">c) uniquement en compression</button></div><div class="fb"></div></div>
+</section>
+
+<!-- ================= 1.5 ================= -->
+<section id="s1-5" class="chs">
+<h2 class="st2">1.5 — Bilan et auto-évaluation</h2>
+<div class="box ret"><span class="lab">À retenir</span><ul>
+<li>Le calcul anélastique exploite la <strong>réserve de ductilité</strong> (ordre de grandeur, <strong>non universel</strong>) : en flexion, <strong>\(M_p=f\,M_e\)</strong> avec \(f=1{,}5\) pour un rectangle.</li>
+<li>Structure isostatique : <strong>1 rotule</strong> ⇒ mécanisme ; hyperstatique de degré \(n\) : <strong>\(n+1\) rotules</strong>.</li>
+<li>Série : même \(\sigma\), \(\varepsilon\) additives (Maxwell : fluage illimité). Parallèle : même \(\varepsilon\), \(\sigma\) additives (Kelvin-Voigt : fluage limité).</li>
+<li>\(\tau=\eta/E\) : temps caractéristique (63,2 % en \(\tau\), ≈95 % en \(3\tau\)).</li>
+<li>\(k=EE_T/(E-E_T)\) relie \(d\sigma\) et \(d\varepsilon^p\) ; ce n'est pas la pente \(\sigma\)–\(\varepsilon\).</li>
+<li>Tresca (hexagone) inscrit dans von Mises (ellipse) : plus conservateur. En contraintes planes, \(\sigma_3=0\).</li>
+<li>\(\tilde\sigma=\sigma/(1-D)\) et \(\varepsilon=\sigma/[E(1-D)]\) : modèle isotrope scalaire, valable tant que \(\tilde\sigma\le\sigma_e\).</li></ul></div>
+
+<h3>Auto-évaluation par niveaux</h3>
+<div class="quiz" data-correct="b" data-ok="✓ E s'exprime en MPa (= N/mm²)." data-bad="✗ E est une contrainte par unité de déformation : MPa."><div class="quiz-q"><b>Niveau 1</b> — Unité du module d'Young E ?</div><div class="quiz-options"><button data-ans="a">a) N</button><button data-ans="b">b) MPa</button><button data-ans="c">c) sans dimension</button></div><div class="fb"></div></div>
+<div class="quiz" data-correct="b" data-ok="✓ εe=235/210000≈1,12×10⁻³ ; à ε=0,002 > εe, la barre plastifie à σ=σe." data-bad="✗ εe ≈ 1,12×10⁻³ < 0,002 ⇒ plastification à σ=σe=235 MPa."><div class="quiz-q"><b>Niveau 2</b> — Barre d'acier (σe=235 MPa, E=210 000 MPa) soumise à ε=0,002. Que se passe-t-il ?</div><div class="quiz-options"><button data-ans="a">a) Reste élastique (σ=420 MPa)</button><button data-ans="b">b) Plastifie (σ=235 MPa, ε imposée)</button><button data-ans="c">c) Se rompt</button></div><div class="fb"></div></div>
+<div class="quiz" data-correct="a" data-ok="✓ Tresca ne dépend que de σ1−σ3 ; son hexagone est inscrit dans l'ellipse de von Mises, donc plus conservateur." data-bad="✗ Tresca ne dépend que de (σ1−σ3)."><div class="quiz-q"><b>Niveau 3</b> — Pourquoi Tresca prédit-il parfois la plastification plus tôt que von Mises ?</div><div class="quiz-options"><button data-ans="a">a) Il n'utilise que σ1 et σ3 (domaine inscrit)</button><button data-ans="b">b) von Mises est toujours faux</button><button data-ans="c">c) Il tient compte de la pression hydrostatique</button></div><div class="fb"></div></div>
+
+<h3>Formulaire récapitulatif (généré automatiquement)</h3>
+<div id="formulaire"></div>
+
+<h3>Badges</h3>
+<div class="badges" id="badges"></div>
+
+<h3>Tests de validation scientifique</h3>
+<div class="box cours"><div id="test-output" style="font-family:ui-monospace,monospace;font-size:.82rem"></div></div>
+</section>
+</main>
+<footer><b style="color:var(--blue)">Université Abbes Laghrour Khenchela</b> · Faculté des Sciences et de la Technologie · Département de Génie Civil<br>Plasticité et Endommagement — Master 2 Structure · Dr. TABET Mohamed · 2026–2027 · Version interactive v8 (audit appliqué)</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="modal" id="modal-speed" role="dialog" aria-modal="true" aria-labelledby="sp-title" aria-hidden="true"><div class="modal-card">
+<div class="modal-head"><h3 id="sp-title">⚡ Round éclair</h3><span class="speed-timer" id="sp-timer"></span><button class="ibtn" data-close aria-label="Fermer">✕</button></div><div id="sp-body"></div></div></div>
+<div class="modal" id="modal-help" role="dialog" aria-modal="true" aria-labelledby="help-title" aria-hidden="true"><div class="modal-card">
+<div class="modal-head"><h3 id="help-title">Aide</h3><button class="ibtn" data-close aria-label="Fermer">✕</button></div>
+<div class="helpgrid"><div><kbd>D</kbd> thème clair/sombre</div><div><kbd>H</kbd> tableau de bord</div><div><kbd>S</kbd> round éclair</div><div><kbd>?</kbd> cette aide</div><div><kbd>1</kbd>–<kbd>4</kbd> répondre en session</div><div><kbd>Échap</kbd> fermer</div></div>
+<h4>Comment progresser</h4><ul><li>Chaque fiche : parcourez les 5 onglets, réussissez le QCM et le défi numérique.</li><li>La maîtrise se calcule sur vos réponses récentes : elle remonte si vous refaites les tests.</li><li>Les XP, niveaux, combos et badges récompensent l'effort, jamais la devinette : seule la <b>première</b> réponse à une question rapporte des XP.</li><li>Le bouton 🔗 des figures copie un lien avec les valeurs des curseurs.</li><li>« Exporter » télécharge votre progression au format JSON (à remettre à l'enseignant si demandé).</li></ul></div></div>
+
+<!-- ================= DATA + ENGINE ================= -->
+<script id="data">
+const T=String.raw;
+const fmt=(x,d=4)=>{if(typeof x!=='number'||isNaN(x))return '—';if(!isFinite(x))return '∞';if(x===0)return '0';const a=Math.abs(x);
+  if(a>=1e6||a<1e-3)return x.toExponential(d-1).replace(/e\+?(-?)(\d+)/,(m,s,n)=>'×10<sup>'+s+n+'</sup>');
+  return String(+x.toPrecision(d));};
+const f=fmt;
+const EQ={
+ hooke:(E,e)=>E*e,
+ Mmax:(P,L)=>P*L/4,
+ Iy:(b,h)=>b*h*h*h/12, Wel:(b,h)=>b*h*h/6, Zpl:(b,h)=>b*h*h/4,
+ sigBeam:(M,b,h)=>M*1e6/EQ.Wel(b,h),
+ Me:(b,h,se)=>se*EQ.Wel(b,h)/1e6, Mp:(b,h,se)=>se*EQ.Zpl(b,h)/1e6,
+ Pe:(L,b,h,se)=>4*EQ.Me(b,h,se)/L, Pp:(L,b,h,se)=>4*EQ.Mp(b,h,se)/L,
+ Ne:(se,S)=>se*S/1000, dLe:(se,E,L)=>se/E*L,
+ mxCreep:(s0,E,eta,t)=>s0/E+s0*t/eta, mxRelax:(E,e0,eta,t)=>E*e0*Math.exp(-E*t/eta),
+ kvCreep:(s0,E,eta,t)=>(s0/E)*(1-Math.exp(-E*t/eta)),
+ hk:(E,ET)=>E*ET/(E-ET),
+ epp:(e,E,ss)=>e<ss/E?E*e:ss, epe:(e,E,ss,ET)=>e<ss/E?E*e:ss+ET*(e-ss/E),
+ tau3:(a,b,c)=>(Math.max(a,b,c)-Math.min(a,b,c))/2,
+ vm3:(a,b,c)=>Math.sqrt(0.5*((a-b)**2+(b-c)**2+(c-a)**2)),
+ vmPS:(a,b)=>Math.sqrt(Math.max(a*a-a*b+b*b,0)),
+ kDP:(se,al)=>se*(1/Math.sqrt(3)+al),
+ dp:(a,b,c,al,k)=>Math.sqrt(((a-b)**2+(b-c)**2+(c-a)**2)/6)+al*(a+b+c)-k,
+ eff:(s,D)=>s/(1-D), dmgStrain:(s,E,D)=>s/(E*(1-D)),
+ princ:(sx,sy,t)=>{const c=(sx+sy)/2,R=Math.sqrt(((sx-sy)/2)**2+t*t);return{s1:c+R,s2:c-R,R,c}}
+};
+const I=(k,lab,u,min,max,step,v,d)=>({k,lab,u,min,max,step,v,d});
+const lawOf=(base,a,b)=>{if(!base||!isFinite(a)||!isFinite(b)||a<=0||b<=0||base<=0)return ['—','—','—'];
+  const ru=a/base,rd=b/base,n1=Math.log2(ru),n2=-Math.log2(rd);
+  let lab;if(Math.abs(n1-n2)<0.03){const n=(n1+n2)/2;lab=Math.abs(n)<0.02?'aucun effet':Math.abs(n-1)<0.03?'proportionnel (∝ x)':Math.abs(n+1)<0.03?'inversement proportionnel (∝ 1/x)':'loi de puissance ∝ x<sup>'+(+n.toFixed(2))+'</sup>';}
+  else lab='non proportionnel (somme de termes, exponentielle…)';
+  return [f(ru,3),f(rd,3),lab];};
+
+const CARDS=[
+/* ---------- PRINCIPES ---------- */
+{id:'PR-2',kind:'Principe',title:'Réserve de ductilité (fondement du calcul anélastique)',
+ principle:"Un acier doux continue de porter sa charge après avoir atteint σe : il peut subir plusieurs % de déformation plastique avant rupture. Le calcul anélastique exploite cette réserve au lieu de la gaspiller.",
+ hyp:["Matériau ductile (grande déformation ultime ε<sub>u</sub> ≫ ε<sub>e</sub>)","Palier de plasticité stable (pas d'instabilité locale prématurée)","Sections capables de tourner suffisamment (compacité)"],
+ lim:["Le rapport ε<sub>u</sub>/ε<sub>e</sub> ≈ 200 est un <b>exemple</b>, non universel (aciers à haute limite : bien moindre)","Inapplicable aux matériaux fragiles (verre, fonte, béton en traction)"],
+ err:["Généraliser « 200× » à tous les aciers","Oublier de vérifier la capacité de rotation des rotules"],
+ q:{q:"Le calcul plastique est approprié pour :",o:["Un acier doux ductile","Du verre","Une fonte grise fragile"],c:0,e:"Il suppose un matériau capable de grandes déformations plastiques stables."}},
+{id:'PR-3',kind:'Principe',title:'Rotule plastique et mécanisme de ruine',
+ principle:"Une structure ruine quand des rotules plastiques la transforment en mécanisme (elle devient géométriquement mobile). La ruine n'est donc pas la première plastification : après elle, les moments se redistribuent.",
+ der:[T`<b>Isostatique (degré 0)</b> : aucune redondance. Une seule rotule libère une rotation relative et suffit à rendre la structure mobile : \(0+1=1\) rotule.`,T`<b>Chaque rotule</b> supprime l'équivalent d'une liaison interne : le moment est bloqué à \(M_p\) mais la rotation est libre.`,T`<b>Hyperstatique de degré \(n\)</b> : il faut d'abord supprimer \(n\) redondances (\(n\) rotules) pour retrouver un système isostatique, puis une de plus pour créer le mécanisme : \(n+1\) rotules.`,T`Entre la 1<sup>re</sup> plastification et le mécanisme, la structure continue de supporter une charge croissante : c'est la <b>redistribution plastique</b>, source de l'économie de matière.`],
+ hyp:["Matériau ductile (EPP), rotules à capacité de rotation suffisante","Chargement proportionnel croissant","Pas d'instabilité (flambement, déversement) avant le mécanisme"],
+ lim:["Ne renseigne pas sur les déformations ni la fissuration à l'état de service","Les instabilités peuvent précéder le mécanisme"],
+ err:["Arrêter le calcul à la première plastification : c'est la limite élastique, pas la ruine","Compter n rotules au lieu de n+1 pour un hyperstatique de degré n"],
+ q:{q:"Poutre encastrée–appuyée (hyperstatique de degré 1) : nombre de rotules du mécanisme ?",o:["1","2","3"],c:1,e:"Degré n=1 ⇒ n+1 = 2 rotules (encastrement et section sous la charge)."}},
+{id:'PR-1',kind:'Principe',title:'Hypothèse de Bernoulli (sections planes)',
+ principle:"En flexion, chaque section droite reste plane et perpendiculaire à la fibre moyenne : elle tourne comme un corps rigide. La déformation ε varie donc linéairement avec la distance à l'axe neutre.",
+ der:[T`La section tourne d'un angle \(d\theta\) autour de l'axe neutre, sans se gauchir.`,T`La fibre située à la distance \(z\) s'allonge de \(z\,d\theta\) sur la longueur initiale \(dx\).`,T`Donc \(\varepsilon(z)=z\,\dfrac{d\theta}{dx}=\kappa z\), avec \(\kappa=1/\rho\) la courbure : <b>ε est linéaire en z</b>.`,T`En élasticité, Hooke donne \(\sigma=E\kappa z\) (linéaire) ; en plasticité, ε reste linéaire mais \(\sigma\) est écrêtée à \(\pm\sigma_e\) (voir FIG-1-12).`],
+ hyp:["Poutre élancée (L/h ≳ 10), petites rotations","Section constante ou à variation lente","Flexion sans gauchissement notable"],
+ lim:["Poutres courtes ou très hautes : l'effort tranchant gauchit les sections","Variation brutale de section : l'hypothèse n'est plus vérifiée localement"],
+ err:["Croire que σ reste linéaire en z en plasticité (c'est ε qui l'est)","Confondre « section plane » et « section non tournée »"],
+ q:{q:"En flexion plastique d'une poutre élancée, ε(z) est :",o:["Linéaire en z","Uniforme","Parabolique"],c:0,e:"Sections planes ⇒ ε linéaire ; c'est σ qui est écrêtée à ±σe."}},
+{id:'PR-4',kind:'Principe',title:'Règles de composition série / parallèle',
+ principle:"Pour combiner les éléments rhéologiques, on raisonne comme en électricité : en série la contrainte est commune et les déformations s'additionnent ; en parallèle la déformation est commune et les contraintes s'additionnent.",
+ der:[T`<b>Série</b> (les éléments se transmettent la même force) : \(\sigma=\sigma_1=\sigma_2\) et \(\varepsilon=\varepsilon_1+\varepsilon_2\).`,T`<b>Parallèle</b> (les éléments sont tirés ensemble du même allongement) : \(\varepsilon=\varepsilon_1=\varepsilon_2\) et \(\sigma=\sigma_1+\sigma_2\).`,T`<b>Maxwell</b> = ressort + amortisseur en <b>série</b> ; <b>Kelvin-Voigt</b> = ressort + amortisseur en <b>parallèle</b> ; <b>EPP</b> = ressort + patin en série.`],
+ hyp:["Éléments idéaux (linéaires, sans masse)","Liaisons parfaites, sollicitation uniaxiale"],
+ lim:["Modèles 1D : l'extension au 3D exige des tenseurs","Nombre d'éléments limité = comportement approché"],
+ err:["Additionner les contraintes en série","Additionner les déformations en parallèle"],
+ q:{q:"Le modèle de Maxwell est :",o:["Ressort + amortisseur en série","Ressort + amortisseur en parallèle","Ressort + patin en parallèle"],c:0,e:"Série : même σ, ε additives."}},
+/* ---------- ÉQUATIONS ---------- */
+{id:'EQ-1-00',kind:'Définition',title:'Contrainte, déformation et décomposition ε = εᵉ + εᵖ',fig:'fig-1-01',
+ principle:"Pour comparer des essais sur des éprouvettes de tailles différentes, on normalise la force par la section (contrainte) et l'allongement par la longueur initiale (déformation). Au-delà de l'élasticité, la déformation se découpe en une part réversible et une part permanente.",
+ tex:T`\sigma=\frac{F}{S},\qquad \varepsilon=\frac{\Delta L}{L_0},\qquad \varepsilon=\varepsilon^e+\varepsilon^p`,
+ sym:[[T`\sigma`,"Contrainte normale moyenne","MPa (= N/mm²)","0–500 pour les aciers"],[T`F`,"Force axiale","N (kN)","—"],[T`S`,"Section droite","mm²","—"],[T`\varepsilon`,"Déformation normale","– (ou %)","10⁻³ en élasticité"],[T`\Delta L,\ L_0`,"Allongement, longueur initiale","mm","—"],[T`\varepsilon^e,\ \varepsilon^p`,"Parts élastique / plastique","–","—"]],
+ hyp:["Barre prismatique, force axiale centrée","Contrainte uniforme dans la section","Petites déformations : S et L₀ restent ≈ constantes"],
+ lim:["En striction, la section réelle diminue : il faut la contrainte « vraie » F/S<sub>réelle</sub>","L'additivité ε = εᵉ + εᵖ suppose de petites déformations"],
+ err:["Confondre MPa et N/m² : 1 MPa = 1 N/mm²","Oublier kN → N (141 kN = 141 000 N)","Insérer ε en % dans une formule qui attend un nombre pur"],
+ der:[T`Contrainte moyenne : la force \(F\) se répartit sur la section \(S\), d'où \(\sigma=F/S\).`,T`Déformation : allongement relatif \(\varepsilon=\Delta L/L_0\) (nombre sans dimension).`,T`Après décharge, la barre ne retrouve pas sa longueur initiale : l'allongement résiduel est la part plastique \(\varepsilon^p\).`,T`La part récupérée est élastique : \(\varepsilon^e=\sigma/E\). Donc \(\varepsilon=\varepsilon^e+\varepsilon^p\), soit \(d\varepsilon=d\varepsilon^e+d\varepsilon^p\) (utilisé pour établir \(k\) dans EQ-1-14).`],
+ inp:[I('F','F','kN',20,400,1,141,"Force axiale"),I('S','S','mm²',100,1200,10,600,"Section"),I('dL','ΔL','mm',0.5,6,0.01,2.24,"Allongement"),I('L0','L₀','mm',500,4000,100,2000,"Longueur initiale")],
+ rl:'σ',calc:v=>{const s=v.F*1000/v.S,e=v.dL/v.L0;return{v:s,u:'MPa',s:[`σ = F/S = ${f(v.F*1000)} N / ${f(v.S)} mm² = <b>${f(s)} MPa</b>`,`ε = ΔL/L₀ = ${f(v.dL)} / ${f(v.L0)} = ${f(e)} (soit ${f(e*100)} %)`,`Si le comportement est élastique : E = σ/ε ≈ ${f(s/e)} MPa`]}},
+ interp:"Par défaut σ = 235 MPa : la barre est exactement au seuil de l'acier S235 et s'est allongée de 2,24 mm sur 2 m (ε ≈ 0,112 %).",expect:235,tol:0.01,
+ q:{q:"1 MPa est égal à :",o:["1 N/m²","1 N/mm²","1 kN/mm²"],c:1,e:"1 MPa = 10⁶ Pa = 10⁶ N/m² = 1 N/mm²."}},
+{id:'EQ-1-01',kind:'Loi',title:'Loi de Hooke uniaxiale',fig:'fig-1-01',
+ principle:"Dans le domaine élastique linéaire, la contrainte est proportionnelle à la déformation. Le coefficient de proportionnalité E mesure la rigidité du matériau.",
+ tex:T`\sigma=E\,\varepsilon`,
+ sym:[[T`\sigma`,"Contrainte normale (+ en traction)","MPa","≤ 235 pour S235"],[T`E`,"Module d'Young (pente de la droite)","MPa","210 000 acier ; 70 000 alu ; 30 000 béton"],[T`\varepsilon`,"Déformation (+ en allongement)","–","< 10⁻³ pour l'acier"]],
+ hyp:["Élasticité linéaire et réversible","Matériau isotrope","État de contrainte uniaxial","Petites déformations, chargement quasi-statique, isotherme"],
+ lim:["Invalide au-delà de σe (plasticité)","Ne décrit ni fluage ni relaxation (viscoélasticité)","Ne prend pas en compte l'endommagement","Matériaux anisotropes : loi tensorielle nécessaire"],
+ err:["Utiliser Hooke au-delà de σe","Penser que E donne la résistance (il donne la rigidité)","Mélanger MPa et GPa"],
+ der:[T`Essai de traction : on mesure \(F\) et \(\Delta L\) puis on calcule \(\sigma\) et \(\varepsilon\).`,T`Au début, le diagramme \(\sigma\)–\(\varepsilon\) est une <b>droite passant par l'origine</b> (observation de Hooke, 1678).`,T`On <b>définit</b> E comme la pente de cette droite : \(\sigma=E\varepsilon\). C'est une loi de comportement <i>empirique</i>, non démontrée à partir de principes premiers.`,T`Réversibilité : en déchargeant on revient sur la même droite ⇒ élasticité.`,T`Fin du domaine : \(\varepsilon_e=\sigma_e/E=235/210\,000=1{,}12\times10^{-3}\).`],
+ inp:[I('E','E','MPa',150000,250000,5000,210000,"Module d'Young"),I('e','ε','–',0,0.003,0.0001,0.001,"Déformation")],
+ rl:'σ',calc:v=>{const s=EQ.hooke(v.E,v.e);return{v:s,u:'MPa',s:[`σ = E·ε = ${f(v.E)} × ${f(v.e)} = <b>${f(s)} MPa</b>`,`Rapport à σe (S235 : 235 MPa) : ${f(100*s/235,3)} %`],n:s>235?"⚠ σ > 235 MPa : un acier S235 aurait déjà plastifié, Hooke ne s'applique plus.":"✓ σ ≤ 235 MPa : domaine élastique d'un acier S235."}},
+ interp:"À 0,1 % d'allongement l'acier est à 210 MPa (89 % de σe). Hooke ne dit rien sur la limite d'élasticité : elle se vérifie séparément.",expect:210,tol:1e-6,
+ q:{q:"À même déformation, un acier (E≈210 GPa) est comparé à un alliage d'aluminium (E≈70 GPa) : sa contrainte est…",o:["environ 3 fois plus grande","environ 3 fois plus petite","identique"],c:0,e:"σ = Eε : E acier ≈ 3 × E alu."}},
+{id:'EQ-1-02',kind:'Résultat',title:'Réactions et moment fléchissant (poutre sur deux appuis, charge au centre)',fig:'fig-1-02',
+ principle:"La symétrie impose des réactions égales à P/2 ; le moment fléchissant croît linéairement depuis l'appui et est maximal sous la charge.",
+ tex:T`R_A=R_B=\frac P2,\quad M(x)=\frac{Px}{2}\ \left(0\le x\le\tfrac L2\right),\quad M_{\max}=\frac{PL}{4}`,
+ sym:[[T`P`,"Charge concentrée au centre","kN","—"],[T`L`,"Portée","m","3–12 m"],[T`R_A,R_B`,"Réactions d'appui","kN","P/2"],[T`M(x)`,"Moment fléchissant","kN·m","0 aux appuis"]],
+ hyp:["Poutre isostatique sur deux appuis simples","Charge ponctuelle au milieu","Poids propre négligé"],
+ lim:["Pas de poids propre ni de charges réparties","Valable uniquement pour cette configuration (isostatique)"],
+ err:["Utiliser PL/8 (charge répartie) au lieu de PL/4","Mélanger kN·m et N·mm","Placer le maximum à un appui"],
+ der:[T`Équilibre vertical : \(R_A+R_B=P\).`,T`Symétrie (charge au centre, appuis identiques) : \(R_A=R_B=P/2\).`,T`Coupure à l'abscisse \(x<L/2\) ; équilibre des moments de la partie gauche : \(M(x)=R_A\,x=Px/2\).`,T`\(M\) croît linéairement jusqu'à \(x=L/2\), puis décroît symétriquement ⇒ maximum à mi-travée : \(M_{\max}=\dfrac P2\cdot\dfrac L2=\dfrac{PL}4\).`],
+ inp:[I('P','P','kN',0,1500,5,835,"Charge"),I('L','L','m',3,10,0.5,6,"Portée")],
+ rl:'M<sub>max</sub>',calc:v=>{const M=EQ.Mmax(v.P,v.L);return{v:M,u:'kN·m',s:[`R<sub>A</sub> = R<sub>B</sub> = P/2 = ${f(v.P/2)} kN`,`M<sub>max</sub> = P·L/4 = ${f(v.P)} × ${f(v.L)} / 4 = <b>${f(M)} kN·m</b>, atteint à x = L/2 = ${f(v.L/2)} m`]}},
+ interp:"M<sub>max</sub> est proportionnel à P <i>et</i> à L : doubler la portée double le moment (la loi de sensibilité le confirme).",expect:1252.5,tol:1e-6,
+ q:{q:"Si on double la portée L (P constant), M<sub>max</sub> est multiplié par :",o:["1","2","4"],c:1,e:"M<sub>max</sub> = PL/4 est proportionnel à L ⇒ ×2."}},
+{id:'EQ-1-03',kind:'Loi',title:'Formule de Navier (contrainte de flexion)',fig:'fig-1-02',
+ principle:"La contrainte normale de flexion est proportionnelle au moment et à la distance à l'axe neutre. Elle est maximale aux fibres extrêmes et se calcule avec le module élastique W<sub>el</sub> de la section.",
+ tex:T`I_y=\frac{bh^3}{12},\quad W_{el}=\frac{I_y}{z_{\max}}=\frac{bh^2}{6},\quad \sigma_{\max}=\frac{M_{\max}}{W_{el}}`,
+ sym:[[T`I_y`,"Moment quadratique de la section","mm⁴","10⁸–10⁹ (poutres de bâtiment)"],[T`W_{el}`,"Module de flexion élastique","mm³","—"],[T`z_{\max}`,"Distance à la fibre extrême (h/2)","mm","—"],[T`M_{\max}`,"Moment fléchissant max","N·mm","1 kN·m = 10⁶ N·mm"],[T`b,\ h`,"Largeur, hauteur","mm","—"]],
+ hyp:["Poutre droite à section constante, symétrique","Flexion simple (hypothèse de Bernoulli : PR-1)","Matériau élastique linéaire","Petites déformations"],
+ lim:["Valable seulement si σ<sub>max</sub> ≤ σe","Ne donne pas la charge de ruine","Néglige l'effort tranchant et le déversement"],
+ err:["Oublier le facteur 10⁶ (kN·m → N·mm)","Prendre h au lieu de h/2 pour z<sub>max</sub>","Confondre h³ (inertie) et h² (module)"],
+ der:[T`<b>Bernoulli</b> (PR-1) : \(\varepsilon(z)=\kappa z\).`,T`<b>Hooke</b> : \(\sigma(z)=E\kappa z\).`,T`<b>Équilibre des moments</b> de la section : \(M=\displaystyle\int_S\sigma z\,dA=E\kappa\int_S z^2dA=E\kappa I_y\).`,T`D'où \(\kappa=M/(EI_y)\) et \(\sigma(z)=\dfrac{M\,z}{I_y}\).`,T`Maximum en \(z=h/2\) : \(\sigma_{\max}=\dfrac{M}{I_y/z_{\max}}=\dfrac{M}{W_{el}}\).`,T`Rectangle : \(I_y=\displaystyle\int_{-h/2}^{h/2}z^2\,b\,dz=b\,\dfrac{2(h/2)^3}{3}=\dfrac{bh^3}{12}\), donc \(W_{el}=\dfrac{bh^2}{6}\).`],
+ inp:[I('b','b','mm',100,400,10,200,"Largeur"),I('h','h','mm',200,600,10,400,"Hauteur"),I('M','M','kN·m',0,1800,10,1250,"Moment")],
+ rl:'σ<sub>max</sub>',calc:v=>{const I_=EQ.Iy(v.b,v.h),W=EQ.Wel(v.b,v.h),s=EQ.sigBeam(v.M,v.b,v.h);return{v:s,u:'MPa',s:[`I<sub>y</sub> = bh³/12 = ${f(v.b)}×${f(v.h)}³/12 = ${f(I_)} mm⁴`,`W<sub>el</sub> = bh²/6 = ${f(W)} mm³ (= I<sub>y</sub>/(h/2) ✓)`,`M = ${f(v.M)} kN·m = ${f(v.M*1e6)} N·mm`,`σ<sub>max</sub> = M/W<sub>el</sub> = ${f(v.M*1e6)} / ${f(W)} = <b>${f(s)} MPa</b>`],n:s>235?"⚠ σ<sub>max</sub> > 235 MPa : première plastification dépassée (la formule n'est plus valable).":"✓ σ<sub>max</sub> ≤ 235 MPa : poutre élastique (S235)."}},
+ interp:"Avec M = 1250 kN·m, la fibre extrême est tout juste à σe : c'est la <b>première plastification</b> (P ≈ 835 kN), pas la ruine. Remarquez la loi de sensibilité : σ ∝ 1/h² (hauteur) mais seulement ∝ 1/b (largeur).",expect:234.375,tol:1e-6,
+ q:{q:"On double la hauteur h (b et M constants). σ<sub>max</sub> est :",o:["divisée par 2","divisée par 4","divisée par 8"],c:1,e:"σ = 6M/(bh²) ∝ 1/h² ⇒ ÷4."}},
+{id:'EQ-1-04',kind:'Résultat',title:'Traction simple d\'une section homogène : Nₚ = Nₑ',fig:'fig-1-03',
+ principle:"En traction simple, toutes les fibres d'une section homogène atteignent σe en même temps : il n'y a aucun gain plastique.",
+ tex:T`N_e=\sigma_e S,\quad \Delta L_e=\frac{\sigma_e}{E}L,\quad N_p=\sigma_e S=N_e`,
+ sym:[[T`N_e,N_p`,"Effort normal élastique / plastique","N (kN)","—"],[T`\sigma_e`,"Limite d'élasticité","MPa","235 (S235)"],[T`S`,"Section","mm²","—"],[T`\Delta L_e`,"Allongement au seuil","mm","≈ 1–3 mm sur 2 m"],[T`L`,"Longueur","mm","—"]],
+ hyp:["Section homogène, contrainte uniforme","Matériau EPP (palier plastique)","Barre non élancée (pas de flambement)"],
+ lim:["En flexion la contrainte n'est pas uniforme : il y a un gain plastique (voir EQ-1-21)","Écrouissage et striction ignorés"],
+ err:["Croire qu'on peut dépasser N<sub>e</sub> en traction pure sans allongement illimité","Oublier de convertir N en kN"],
+ der:[T`Contrainte uniforme : \(\sigma=N/S\).`,T`Première plastification : \(\sigma=\sigma_e\) en <i>toutes</i> les fibres simultanément ⇒ \(N_e=\sigma_eS\).`,T`Plastification de la section : même condition ⇒ \(N_p=\sigma_eS=N_e\), d'où \(N_p/N_e=1\).`,T`Allongement au seuil : Hooke \(\varepsilon_e=\sigma_e/E\), donc \(\Delta L_e=\varepsilon_eL\).`],
+ inp:[I('s','σe','MPa',150,400,5,235,"Limite d'élasticité"),I('S','S','mm²',100,1200,50,600,"Section"),I('E','E','MPa',150000,250000,5000,210000,"Module d'Young"),I('L','L','mm',500,4000,100,2000,"Longueur")],
+ rl:'N<sub>e</sub> = N<sub>p</sub>',calc:v=>{const N=EQ.Ne(v.s,v.S);return{v:N,u:'kN',s:[`N<sub>e</sub> = σe·S = ${f(v.s)} × ${f(v.S)} = ${f(N*1000)} N = <b>${f(N)} kN</b>`,`ε<sub>e</sub> = σe/E = ${f(v.s/v.E)} ; ΔL<sub>e</sub> = ε<sub>e</sub>·L = <b>${f(EQ.dLe(v.s,v.E,v.L))} mm</b>`,`N<sub>p</sub>/N<sub>e</sub> = 1 : aucun gain plastique`]}},
+ interp:"N<sub>p</sub> = N<sub>e</sub> = 141 kN pour la barre 20×30 : au-delà la barre s'allonge sans limite à charge constante.",expect:141,tol:1e-6,
+ q:{q:"Pourquoi N<sub>p</sub> = N<sub>e</sub> en traction simple ?",o:["Toutes les fibres atteignent σe en même temps","Parce que l'acier est parfaitement élastique","Parce que E est très grand"],c:0,e:"Contrainte uniforme : pas de réserve entre première plastification et plastification complète."}},
+{id:'EQ-1-05',kind:'Loi',title:'Lois constitutives des trois éléments de base',fig:'fig-1-04',
+ principle:"Tout comportement complexe se décompose en briques simples : le ressort stocke l'énergie, l'amortisseur la dissipe par viscosité, le patin la dissipe par frottement.",
+ tex:T`\text{Ressort : }\sigma=E\varepsilon\qquad\text{Amortisseur : }\sigma=\eta\dot\varepsilon\qquad\text{Patin : }|\sigma|\le\sigma_s,\ \ \sigma=\sigma_s\ \text{si}\ \dot\varepsilon^p\ne0`,
+ sym:[[T`E`,"Raideur du ressort","MPa","10³–10⁵"],[T`\eta`,"Viscosité de l'amortisseur","MPa·s","10⁵–10⁹"],[T`\dot\varepsilon`,"Vitesse de déformation","s⁻¹","10⁻⁸–10⁻³"],[T`\sigma_s`,"Seuil du patin","MPa","= σe"],[T`\varepsilon^p`,"Déformation plastique","–","—"]],
+ hyp:["Ressort linéaire","Amortisseur newtonien (σ ∝ ε̇)","Patin rigide-parfait (seuil fixe)"],
+ lim:["Modèles unidimensionnels","Viscosité non linéaire (loi de Norton σⁿ) non décrite par un amortisseur linéaire"],
+ err:["Confondre ressort (stocke) et patin (dissipe)","Dépasser σ<sub>s</sub> avec un patin : impossible, il glisse"],
+ der:[T`<b>Ressort</b> : la force est proportionnelle à l'allongement ⇒ \(\sigma=E\varepsilon\), réversible.`,T`<b>Amortisseur</b> : la force est proportionnelle à la <i>vitesse</i> d'allongement ⇒ \(\sigma=\eta\dot\varepsilon\).`,T`<b>Patin</b> (frottement sec) : aucun glissement tant que \(|\sigma|<\sigma_s\) ; glissement à \(\sigma=\sigma_s\).`,T`<b>Énergie</b> : ressort \(\tfrac12E\varepsilon^2\) (stockée) ; amortisseur \(\int\eta\dot\varepsilon^2dt\) (dissipée) ; patin \(\sigma_s\varepsilon^p\) (dissipée).`],
+ inp:[I('E','E','MPa',50000,300000,5000,200000,"Raideur"),I('e','ε','–',0,0.003,0.0001,0.001,"Déformation du ressort"),I('eta','η','MPa·s',1e7,5e9,1e7,1e9,"Viscosité"),I('ed','ε̇','s⁻¹',0,1e-6,1e-8,1e-7,"Vitesse de déformation de l'amortisseur")],
+ rl:'σ<sub>ressort</sub>',calc:v=>{const sR=v.E*v.e,sA=v.eta*v.ed;return{v:sR,u:'MPa',s:[`Ressort : σ = E·ε = ${f(v.E)} × ${f(v.e)} = <b>${f(sR)} MPa</b>`,`Amortisseur : σ = η·ε̇ = ${f(v.eta)} × ${f(v.ed)} = <b>${f(sA)} MPa</b>`,`Le ressort dépend de ε (état), l'amortisseur de ε̇ (vitesse).`]}},
+ interp:"Pour une même contrainte, l'amortisseur ne « répond » qu'à la vitesse : à ε̇ = 0 il ne porte plus rien.",expect:200,tol:1e-6,
+ q:{q:"Quel élément dissipe l'énergie par viscosité (chaleur) ?",o:["Le ressort","L'amortisseur","Aucun"],c:1,e:"Le ressort stocke ; le patin dissipe par frottement ; l'amortisseur par viscosité."}},
+{id:'EQ-1-06',kind:'Loi',title:'Équation constitutive de Maxwell',fig:'fig-1-05',
+ principle:"Ressort et amortisseur en série : même contrainte, déformations additives. La vitesse de déformation est la somme d'une part élastique (σ̇/E) et d'une part visqueuse (σ/η).",
+ tex:T`\dot\varepsilon=\frac{\dot\sigma}{E}+\frac{\sigma}{\eta}`,
+ sym:[[T`\dot\varepsilon`,"Vitesse de déformation","s⁻¹","—"],[T`\dot\sigma`,"Vitesse de contrainte","MPa/s","—"],[T`\sigma`,"Contrainte","MPa","—"],[T`E`,"Module du ressort","MPa","—"],[T`\eta`,"Viscosité","MPa·s","—"]],
+ hyp:["Association en série (PR-4)","E et η constants","Isotherme, petites déformations"],
+ lim:["Pas de seuil plastique","Fluage illimité ; pas de récupération différée"],
+ err:["Oublier le terme σ̇/E","Additionner les contraintes au lieu des déformations"],
+ der:[T`Série : \(\sigma=\sigma_R=\sigma_A\) ; \(\varepsilon=\varepsilon_R+\varepsilon_A\).`,T`Ressort : \(\varepsilon_R=\sigma/E\). Amortisseur : \(\dot\varepsilon_A=\sigma/\eta\).`,T`Dérivation : \(\dot\varepsilon=\dot\varepsilon_R+\dot\varepsilon_A\).`,T`Substitution : \(\dot\varepsilon_R=\dot\sigma/E\) et \(\dot\varepsilon_A=\sigma/\eta\).`,T`Résultat : \(\dot\varepsilon=\dot\sigma/E+\sigma/\eta\).`],
+ inp:[I('sd','σ̇','MPa/s',0,0.2,0.01,0.01,"Vitesse de contrainte"),I('s','σ','MPa',0,200,5,100,"Contrainte"),I('E','E','MPa',50000,300000,5000,200000,"Module"),I('eta','η','MPa·s',1e7,5e9,1e7,1e9,"Viscosité")],
+ rl:'ε̇',calc:v=>{const a=v.sd/v.E,b=v.s/v.eta,t=a+b;return{v:t,u:'s⁻¹',s:[`Part élastique σ̇/E = ${f(v.sd)}/${f(v.E)} = ${f(a)} s⁻¹`,`Part visqueuse σ/η = ${f(v.s)}/${f(v.eta)} = ${f(b)} s⁻¹`,`ε̇ = <b>${f(t)} s⁻¹</b> (élastique ${f(100*a/t,3)} % / visqueuse ${f(100*b/t,3)} %)`]}},
+ interp:"Avec σ̇ = 0 (fluage), seul le terme visqueux subsiste : ε̇ = σ/η. Avec ε̇ = 0 (relaxation), σ̇ = −(E/η)σ.",expect:1.5e-7,tol:1e-12,
+ q:{q:"En fluage (σ constant), ε̇ de Maxwell vaut :",o:["σ/η","σ̇/E","0"],c:0,e:"σ̇ = 0 ⇒ ε̇ = σ/η : vitesse constante."}},
+{id:'EQ-1-07',kind:'Résultat',title:'Fluage de Maxwell (contrainte constante)',fig:'fig-1-05',
+ principle:"Sous contrainte constante, le ressort répond instantanément puis l'amortisseur s'allonge à vitesse constante : la déformation croît indéfiniment.",
+ tex:T`\varepsilon(t)=\frac{\sigma_0}{E}+\frac{\sigma_0}{\eta}\,t`,
+ sym:[[T`\sigma_0`,"Contrainte constante appliquée","MPa","20–200"],[T`E`,"Module","MPa","—"],[T`\eta`,"Viscosité","MPa·s","—"],[T`t`,"Temps","s","—"]],
+ hyp:["σ = σ₀ appliquée instantanément en t = 0","ε(0) = σ₀/E (réponse instantanée du ressort)","E, η constants"],
+ lim:["Croissance linéaire infinie : irréaliste pour un solide","Ne décrit pas la récupération après décharge différée"],
+ err:["Oublier la déformation instantanée σ₀/E","Confondre t en s et en h"],
+ der:[T`\(\sigma=\sigma_0\) constante ⇒ \(\dot\sigma=0\).`,T`Maxwell devient \(\dot\varepsilon=\sigma_0/\eta\) (constante).`,T`Intégration : \(\varepsilon(t)=\dfrac{\sigma_0}{\eta}t+C\).`,T`À \(t=0^+\) seul le ressort a réagi : \(\varepsilon(0)=\sigma_0/E\) ⇒ \(C=\sigma_0/E\).`,T`Résultat : \(\varepsilon(t)=\sigma_0/E+\sigma_0t/\eta\).`],
+ inp:[I('s0','σ₀','MPa',20,200,5,100,"Contrainte"),I('E','E','MPa',50000,300000,5000,200000,"Module"),I('eta','η','MPa·s',1e7,5e9,1e7,1e9,"Viscosité"),I('t','t','s',0,10000,100,3600,"Temps")],
+ rl:'ε(t)',calc:v=>{const a=v.s0/v.E,b=v.s0*v.t/v.eta;return{v:a+b,u:'–',s:[`ε élastique instantanée = σ₀/E = ${f(a)}`,`ε visqueuse = σ₀·t/η = ${f(b)}`,`ε(t) = <b>${f(a+b)}</b> (part visqueuse : ${f(100*b/(a+b),3)} %)`],n:"La déformation visqueuse croît linéairement : fluage illimité."}},
+ interp:"En t = 0 on lit σ₀/E. Pente de la droite : σ₀/η. Aucune asymptote.",expect:8.6e-4,tol:1e-9,
+ q:{q:"Quand t → ∞, le fluage de Maxwell :",o:["diverge linéairement","tend vers σ₀/E","tend vers 0"],c:0,e:"Terme σ₀t/η non borné."}},
+{id:'EQ-1-08',kind:'Résultat',title:'Relaxation de Maxwell (déformation constante)',fig:'fig-1-05',
+ principle:"Sous déformation constante, la contrainte initiale Eε₀ se dissipe peu à peu car l'amortisseur « prend le relais » du ressort : décroissance exponentielle.",
+ tex:T`\sigma(t)=E\varepsilon_0\,e^{-Et/\eta}`,
+ sym:[[T`\varepsilon_0`,"Déformation imposée","–","10⁻³"],[T`E`,"Module","MPa","—"],[T`\eta`,"Viscosité","MPa·s","—"],[T`\tau=\eta/E`,"Temps de relaxation","s","—"]],
+ hyp:["ε = ε₀ imposée instantanément","E, η constants"],
+ lim:["Relaxation totale (σ → 0) : réaliste seulement pour fluides/polymères","Pas de contrainte résiduelle"],
+ err:["Confondre τ = η/E et E/η","Oublier σ(0) = Eε₀ (pas σ₀ quelconque)"],
+ der:[T`\(\varepsilon=\varepsilon_0\) constante ⇒ \(\dot\varepsilon=0\).`,T`Maxwell : \(0=\dot\sigma/E+\sigma/\eta\), soit \(\dot\sigma=-(E/\eta)\sigma\).`,T`Séparation des variables : \(\dfrac{d\sigma}{\sigma}=-\dfrac E\eta dt\).`,T`Intégration : \(\ln\sigma=-\dfrac{Et}{\eta}+C\).`,T`À \(t=0\), seul le ressort a réagi : \(\sigma(0)=E\varepsilon_0\).`,T`Résultat : \(\sigma(t)=E\varepsilon_0e^{-Et/\eta}\).`],
+ inp:[I('E','E','MPa',50000,300000,5000,200000,"Module"),I('e0','ε₀','–',0.0005,0.004,0.0001,0.002,"Déformation imposée"),I('eta','η','MPa·s',1e7,5e9,1e7,1e9,"Viscosité"),I('t','t','s',0,10000,100,3600,"Temps")],
+ rl:'σ(t)',calc:v=>{const s0=v.E*v.e0,tau=v.eta/v.E,s=EQ.mxRelax(v.E,v.e0,v.eta,v.t);return{v:s,u:'MPa',s:[`σ(0) = E·ε₀ = ${f(s0)} MPa`,`τ = η/E = ${f(tau)} s`,`σ(t) = σ(0)·e<sup>−t/τ</sup> = ${f(s0)} × e<sup>−${f(v.t/tau)}</sup> = <b>${f(s)} MPa</b>`,`Contrainte restante : ${f(100*s/s0,3)} % (perte ${f(100-100*s/s0,3)} %)`]}},
+ interp:"À t = τ il reste e⁻¹ ≈ 37 % de la contrainte initiale ; à 3τ il en reste 5 %.",expect:194.70,tol:0.05,
+ q:{q:"À t = τ = η/E, la contrainte restante vaut environ :",o:["37 % de σ(0)","63 % de σ(0)","0 %"],c:0,e:"e⁻¹ ≈ 0,368."}},
+{id:'EQ-1-09',kind:'Loi',title:'Équation constitutive de Kelvin-Voigt',fig:'fig-1-06',
+ principle:"Ressort et amortisseur en parallèle : même déformation, les contraintes s'additionnent.",
+ tex:T`\sigma=E\varepsilon+\eta\dot\varepsilon`,
+ sym:[[T`E`,"Module du ressort","MPa","—"],[T`\eta`,"Viscosité","MPa·s","—"],[T`\varepsilon,\dot\varepsilon`,"Déformation, vitesse","–, s⁻¹","—"]],
+ hyp:["Association en parallèle (PR-4)","E, η constants"],
+ lim:["Sous déformation constante, pas de relaxation (σ = Eε₀)","Ne décrit pas la déformation instantanée"],
+ err:["Additionner les déformations au lieu des contraintes"],
+ der:[T`Parallèle : \(\varepsilon=\varepsilon_R=\varepsilon_A\) (même déformation).`,T`Les contraintes s'additionnent : \(\sigma=\sigma_R+\sigma_A\).`,T`Substitution des lois du ressort et de l'amortisseur : \(\sigma=E\varepsilon+\eta\dot\varepsilon\).`],
+ inp:[I('E','E','MPa',500,5000,100,2000,"Module"),I('e','ε','–',0,0.01,0.0005,0.005,"Déformation"),I('eta','η','MPa·s',1e5,1e6,1e4,5e5,"Viscosité"),I('ed','ε̇','s⁻¹',0,1e-4,1e-6,2e-5,"Vitesse de déformation")],
+ rl:'σ',calc:v=>{const a=v.E*v.e,b=v.eta*v.ed;return{v:a+b,u:'MPa',s:[`Part ressort : E·ε = ${f(a)} MPa`,`Part amortisseur : η·ε̇ = ${f(b)} MPa`,`σ = <b>${f(a+b)} MPa</b> (${f(100*b/(a+b),3)} % visqueuse)`]}},
+ interp:"Plus on déforme vite (ε̇ grand), plus la part visqueuse pèse : le matériau paraît plus raide.",expect:20,tol:1e-9,
+ q:{q:"En parallèle, quelle grandeur est identique pour les deux éléments ?",o:["La déformation","La contrainte","L'énergie"],c:0,e:"Parallèle : ε commune, σ additives."}},
+{id:'EQ-1-10',kind:'Résultat',title:'Fluage de Kelvin-Voigt (limité)',fig:'fig-1-06',
+ principle:"Sous contrainte constante, l'amortisseur retarde la mise en charge du ressort : la déformation tend exponentiellement vers une valeur finie σ₀/E.",
+ tex:T`\varepsilon(t)=\frac{\sigma_0}{E}\left(1-e^{-Et/\eta}\right)`,
+ sym:[[T`\sigma_0`,"Contrainte constante","MPa","—"],[T`E`,"Module","MPa","—"],[T`\eta`,"Viscosité","MPa·s","—"],[T`t`,"Temps","s","—"]],
+ hyp:["σ = σ₀ constante dès t = 0","ε(0) = 0 (l'amortisseur empêche tout saut)"],
+ lim:["Pas de déformation instantanée","Pas de relaxation possible (σ = Eε₀ constant)"],
+ err:["Écrire ε(0) = σ₀/E (c'est Maxwell !)"],
+ der:[T`ODE : \(\eta\dot\varepsilon+E\varepsilon=\sigma_0\), soit \(\dot\varepsilon+(E/\eta)\varepsilon=\sigma_0/\eta\).`,T`Solution homogène : \(\varepsilon_h=Ce^{-Et/\eta}\).`,T`Solution particulière : \(\varepsilon_p=\sigma_0/E\).`,T`Solution générale : \(\varepsilon=\sigma_0/E+Ce^{-Et/\eta}\).`,T`Condition initiale \(\varepsilon(0)=0\) ⇒ \(C=-\sigma_0/E\).`,T`Résultat : \(\varepsilon(t)=(\sigma_0/E)(1-e^{-Et/\eta})\).`],
+ inp:[I('s0','σ₀','MPa',5,60,1,20,"Contrainte"),I('E','E','MPa',500,5000,100,2000,"Module"),I('eta','η','MPa·s',1e5,1e6,1e4,5e5,"Viscosité"),I('t','t','s',0,2000,25,250,"Temps")],
+ rl:'ε(t)',calc:v=>{const a=v.s0/v.E,e=EQ.kvCreep(v.s0,v.E,v.eta,v.t);return{v:e,u:'–',s:[`Asymptote ε<sub>∞</sub> = σ₀/E = ${f(a)}`,`τ = η/E = ${f(v.eta/v.E)} s ; t/τ = ${f(v.t/(v.eta/v.E))}`,`ε(t) = ε<sub>∞</sub>(1 − e<sup>−t/τ</sup>) = <b>${f(e)}</b> (${f(100*e/a,3)} % de ε<sub>∞</sub>)`],n:"Fluage limité : ε reste toujours inférieur à ε<sub>∞</sub>."}},
+ interp:"La déformation finale σ₀/E ne dépend pas de η : la viscosité règle seulement la vitesse d'approche.",expect:6.3212e-3,tol:1e-6,
+ q:{q:"À t = 0⁺, la déformation de Kelvin-Voigt vaut :",o:["0","σ₀/E","l'infini"],c:0,e:"L'amortisseur interdit tout saut de déformation."}},
+{id:'EQ-1-11',kind:'Définition',title:'Temps caractéristique τ = η/E',fig:'fig-1-06',
+ principle:"τ est l'échelle de temps du comportement visqueux : il fixe la rapidité avec laquelle le fluage (K-V) ou la relaxation (Maxwell) se déroule.",
+ tex:T`\tau=\frac{\eta}{E}\qquad \varepsilon(\tau)=0{,}632\,\frac{\sigma_0}{E}`,
+ sym:[[T`\tau`,"Temps caractéristique","s","250 s dans l'exemple"],[T`\eta`,"Viscosité","MPa·s","—"],[T`E`,"Module","MPa","—"]],
+ hyp:["Réponse exponentielle (modèles linéaires à 1 amortisseur)"],
+ lim:["Un seul τ : les matériaux réels ont un spectre de temps"],
+ err:["Écrire τ = E/η","Croire que ε atteint ε<sub>∞</sub> en τ (il atteint 63 %)"],
+ der:[T`Fluage K-V : \(\varepsilon(t)/\varepsilon_\infty=1-e^{-t/\tau}\).`,T`À \(t=\tau\) : \(1-e^{-1}=0{,}632\).`,T`À \(t=3\tau\) : \(1-e^{-3}=0{,}950\). À \(t=5\tau\) : \(0{,}993\).`],
+ inp:[I('E','E','MPa',500,5000,100,2000,"Module"),I('eta','η','MPa·s',1e5,1e6,1e4,5e5,"Viscosité")],
+ rl:'τ',calc:v=>{const tau=v.eta/v.E;return{v:tau,u:'s',s:[`τ = η/E = ${f(v.eta)} / ${f(v.E)} = <b>${f(tau)} s</b>`,`63,2 % de ε<sub>∞</sub> en t = τ = ${f(tau)} s`,`95 % en 3τ = ${f(3*tau)} s ; 99 % en 4,6τ = ${f(4.6*tau)} s`]}},
+ interp:"Un matériau « visqueux » (η grand) a un τ long : il réagit lentement.",expect:250,tol:1e-9,
+ q:{q:"Si η double (E constant), le temps pour atteindre 95 % de ε<sub>∞</sub> :",o:["est doublé","est divisé par 2","est inchangé"],c:0,e:"t₉₅ = 3τ = 3η/E ∝ η."}},
+{id:'EQ-1-12',kind:'Modèle',title:'Modèles sans écrouissage : RPP et EPP',fig:'fig-1-07',
+ principle:"Le modèle EPP (élasto-plastique parfait) est un ressort en série avec un patin. Le modèle RPP (rigide-parfait) néglige l'élasticité : il sert à l'analyse limite.",
+ tex:T`\text{RPP : }\begin{cases}\varepsilon=0&|\sigma|<\sigma_s\\ \sigma=\sigma_s&\varepsilon^p\ne0\end{cases}\qquad\text{EPP : }\begin{cases}\sigma=E\varepsilon&|\sigma|<\sigma_s\\ \sigma=\sigma_s&\varepsilon^p\ne0\end{cases}`,
+ sym:[[T`\sigma_s`,"Seuil plastique","MPa","235 (S235)"],[T`E`,"Module (EPP)","MPa","210 000"],[T`\varepsilon^p`,"Déformation plastique","–","—"]],
+ hyp:["Pas d'écrouissage : le palier est horizontal","Même comportement en traction et compression"],
+ lim:["Le palier horizontal ignore l'écrouissage (réserve supplémentaire)","Ne décrit pas la striction"],
+ err:["Dépasser σ<sub>s</sub> en EPP","Dessiner une pente après le seuil (c'est EPE)"],
+ der:[T`EPP = ressort + patin en série (PR-4) : même \(\sigma\), \(\varepsilon=\varepsilon^e+\varepsilon^p\).`,T`Tant que \(|\sigma|<\sigma_s\) le patin est bloqué : \(\varepsilon^p=0\) et \(\sigma=E\varepsilon\).`,T`Le patin ne peut transmettre plus que \(\sigma_s\) : dès que \(\sigma=\sigma_s\), il glisse et \(\sigma\) reste égale à \(\sigma_s\).`,T`<b>RPP</b> : on fait tendre \(E\to\infty\) : \(\varepsilon^e=0\), le trait élastique devient vertical.`],
+ inp:[I('ss','σs','MPa',150,400,5,235,"Seuil"),I('E','E','MPa',100000,250000,5000,210000,"Module"),I('e','ε','–',0,0.006,0.0005,0.001,"Déformation imposée")],
+ rl:'σ<sub>EPP</sub>',calc:v=>{const s=EQ.epp(v.e,v.E,v.ss),ee=v.ss/v.E;return{v:s,u:'MPa',s:[`ε<sub>e</sub> = σs/E = ${f(ee)}`,v.e<ee?`ε < ε<sub>e</sub> ⇒ élastique : σ = E·ε = <b>${f(s)} MPa</b>`:`ε ≥ ε<sub>e</sub> ⇒ plastique : σ = σs = <b>${f(s)} MPa</b> ; ε<sup>p</sup> = ε − ε<sub>e</sub> = ${f(v.e-ee)}`,`RPP : ε = 0 pour σ < σs, σ = σs ensuite (E → ∞)`]}},
+ interp:"Augmentez ε : σ monte linéairement puis se bloque à σs. Cette saturation est la signature de la plasticité parfaite.",expect:210,tol:1e-6,
+ q:{q:"En EPP, à ε = 3 ε<sub>e</sub>, σ vaut :",o:["σs","3σs","0"],c:0,e:"Le palier est horizontal : σ = σs."}},
+{id:'EQ-1-13',kind:'Modèle',title:'Modèles avec écrouissage : RPE et EPE',fig:'fig-1-07',
+ principle:"Avec écrouissage, la contrainte continue d'augmenter après le seuil. Le module k relie l'incrément de contrainte à l'incrément de déformation <i>plastique</i>.",
+ tex:T`\text{RPE : }\sigma=\sigma_s+k\varepsilon^p\qquad\text{EPE : }\begin{cases}\sigma=E\varepsilon&|\sigma|<\sigma_s\\ \sigma=\sigma_s+k\varepsilon^p&\varepsilon^p\ne0\end{cases}`,
+ sym:[[T`k`,"Module d'écrouissage (dσ = k dε<sup>p</sup>)","MPa","≈ 2 000"],[T`E_T`,"Module tangent (pente σ–ε après le seuil)","MPa","≈ 2 100"],[T`\varepsilon^p`,"Déformation plastique","–","—"]],
+ hyp:["Écrouissage linéaire","Isotrope (pas d'effet Bauschinger)"],
+ lim:["k n'est pas la pente de la courbe σ–ε (c'est E<sub>T</sub>)","Écrouissage linéaire : approximation locale"],
+ err:["Confondre k et E<sub>T</sub>","Tracer RPE avec une contrainte initiale non nulle à ε = 0"],
+ der:[T`Écrouissage linéaire : \(\sigma=\sigma_s+k\varepsilon^p\).`,T`Décomposition : \(\varepsilon=\sigma/E+\varepsilon^p\) avec \(\varepsilon^p=(\sigma-\sigma_s)/k\).`,T`Donc \(\varepsilon=\sigma/E+(\sigma-\sigma_s)/k\) et \(d\varepsilon/d\sigma=1/E+1/k=1/E_T\).`,T`<b>RPE</b> : \(E\to\infty\), alors \(\varepsilon=\varepsilon^p\) et \(k=E_T\) : \(\sigma=\sigma_s+E_T\varepsilon\).`],
+ inp:[I('ss','σs','MPa',150,400,5,235,"Seuil"),I('E','E','MPa',100000,250000,5000,210000,"Module"),I('ET','E_T','MPa',500,8000,100,2100,"Module tangent"),I('e','ε','–',0,0.02,0.0005,0.01,"Déformation")],
+ rl:'σ<sub>EPE</sub>',calc:v=>{const ee=v.ss/v.E,s=EQ.epe(v.e,v.E,v.ss,v.ET),k=EQ.hk(v.E,v.ET);return{v:s,u:'MPa',s:[`ε<sub>e</sub> = σs/E = ${f(ee)}`,v.e<ee?`Élastique : σ = E·ε = ${f(s)} MPa`:`ε<sup>p</sup> = ε − σ/E = ${f(Math.max(v.e-s/v.E,0))} ; σ = σs + E<sub>T</sub>(ε − ε<sub>e</sub>) = <b>${f(s)} MPa</b>`,`k = E·E<sub>T</sub>/(E−E<sub>T</sub>) = ${f(k)} MPa ; contrôle σs + k·ε<sup>p</sup> = ${f(v.e<ee?v.ss:v.ss+k*(v.e-s/v.E))} MPa`,`RPE : σ = σs + E<sub>T</sub>·ε = ${f(v.ss+v.ET*v.e)} MPa`]}},
+ interp:"Les deux calculs (σs + E<sub>T</sub>(ε−ε<sub>e</sub>) et σs + k·ε<sup>p</sup>) donnent le même σ : preuve que k et E<sub>T</sub> décrivent la même courbe sous deux angles.",expect:253.65,tol:0.05,
+ q:{q:"La pente de la courbe σ–ε après le seuil, en EPE, est :",o:["E<sub>T</sub>","k","E"],c:0,e:"k relie dσ à dε<sup>p</sup> ; la pente σ–ε est E<sub>T</sub>."}},
+{id:'EQ-1-14',kind:'Résultat',title:'Module d\'écrouissage k = E·E_T/(E − E_T)',fig:'fig-1-08',
+ principle:"k s'obtient en retirant la part élastique de la pente totale E_T : il isole la seule contribution plastique à l'augmentation de contrainte.",
+ tex:T`k=\frac{E\,E_T}{E-E_T}\qquad d\sigma=k\,d\varepsilon^p`,
+ sym:[[T`k`,"Module d'écrouissage","MPa","≈ E_T quand E_T ≪ E"],[T`E`,"Module d'Young","MPa","210 000"],[T`E_T`,"Module tangent","MPa","500–8 000"]],
+ hyp:["Écrouissage linéaire","E_T < E (sinon k n'est pas défini)"],
+ lim:["Cas limites : E_T → E ⇒ k → ∞ (pas de plasticité) ; E_T = 0 ⇒ k = 0"],
+ err:["Confondre k et E_T","Oublier que k n'est pas défini si E_T = E"],
+ der:[T`\(\varepsilon=\varepsilon^e+\varepsilon^p\) ⇒ \(d\varepsilon=d\varepsilon^e+d\varepsilon^p\), avec \(d\varepsilon^e=d\sigma/E\).`,T`Pente post-élastique : \(d\sigma=E_T\,d\varepsilon\) ⇒ \(d\varepsilon=d\sigma/E_T\).`,T`Substitution : \(d\sigma/E_T=d\sigma/E+d\varepsilon^p\).`,T`Isolement : \(d\varepsilon^p=d\sigma\left(\dfrac1{E_T}-\dfrac1E\right)=d\sigma\,\dfrac{E-E_T}{E\,E_T}\).`,T`Inversion : \(d\sigma=\dfrac{E\,E_T}{E-E_T}\,d\varepsilon^p\), d'où \(k=\dfrac{EE_T}{E-E_T}\).`],
+ inp:[I('E','E','MPa',150000,250000,5000,210000,"Module d'Young"),I('ET','E_T','MPa',500,8000,100,2100,"Module tangent")],
+ rl:'k',calc:v=>{const k=EQ.hk(v.E,v.ET),ds=10;return{v:k,u:'MPa',s:[`k = E·E<sub>T</sub>/(E − E<sub>T</sub>) = ${f(v.E)}×${f(v.ET)} / ${f(v.E-v.ET)} = <b>${f(k)} MPa</b>`,`Test : pour Δσ = ${ds} MPa, Δε<sup>p</sup> = Δσ/k = ${f(ds/k)}`,`Contrôle : Δσ(1/E<sub>T</sub> − 1/E) = ${f(ds*(1/v.ET-1/v.E))} ✓`],n:v.ET>=v.E?"⚠ E_T doit être < E.":""}},
+ interp:"Quand E_T ≪ E, k ≈ E_T (un peu plus grand, ici +1 %) : l'élasticité contribue très peu à la pente post-élastique.",expect:2121.21,tol:0.01,
+ q:{q:"Si E_T → 0 (plasticité parfaite), k tend vers :",o:["+∞","0","E"],c:1,e:"Numérateur → 0 : k → 0, plus aucun écrouissage."}},
+{id:'EQ-1-15',kind:'Critère',title:'Critère de Tresca (cisaillement maximal)',fig:'fig-1-09',
+ principle:"La plastification apparaît quand la contrainte de cisaillement maximale atteint une valeur critique k, identifiée en traction simple : k = σe/2.",
+ tex:T`\tau_{\max}=\frac{\sigma_1-\sigma_3}{2}=k=\frac{\sigma_e}{2}\qquad(\sigma_1\ge\sigma_2\ge\sigma_3)`,
+ sym:[[T`\sigma_1,\sigma_2,\sigma_3`,"Contraintes principales (ordonnées)","MPa","—"],[T`\tau_{\max}`,"Cisaillement maximal","MPa","—"],[T`k`,"Cisaillement critique","MPa","σe/2"],[T`\sigma_e`,"Limite d'élasticité","MPa","—"]],
+ hyp:["Matériau ductile isotrope","Indépendant de σ₂ (contrainte intermédiaire)","Insensible à la pression hydrostatique"],
+ lim:["Ignore σ₂ : conservateur par rapport à von Mises","Frontière avec des angles (hexagone) : difficile numériquement"],
+ err:["Oublier σ₃ = 0 en contraintes planes (τ<sub>max</sub> = (σ₁ − 0)/2 et non (σ₁ − σ₂)/2)","Comparer τ<sub>max</sub> à σe au lieu de σe/2"],
+ der:[T`Dans un état 3D, les cercles de Mohr montrent que \(\tau_{\max}=\max\{|\sigma_i-\sigma_j|/2\}=(\sigma_1-\sigma_3)/2\).`,T`Traction uniaxiale à la limite : \(\sigma_1=\sigma_e\), \(\sigma_2=\sigma_3=0\) ⇒ \(\tau_{\max}=\sigma_e/2\), donc \(k=\sigma_e/2\).`,T`Critère : \(\tau_{\max}=k\iff\sigma_1-\sigma_3=\sigma_e\).`,T`En contraintes planes (\(\sigma_3=0\)) : hexagone de sommets \((\sigma_e,0),(\sigma_e,\sigma_e),(0,\sigma_e),\dots\)`],
+ inp:[I('s1','σ₁','MPa',-200,300,5,140,"Contrainte principale"),I('s2','σ₂','MPa',-200,300,5,40,"Contrainte principale"),I('s3','σ₃','MPa',-200,300,5,0,"Contrainte principale"),I('se','σe','MPa',100,400,5,200,"Limite d'élasticité")],
+ rl:'τ<sub>max</sub>',calc:v=>{const t=EQ.tau3(v.s1,v.s2,v.s3),mx=Math.max(v.s1,v.s2,v.s3),mn=Math.min(v.s1,v.s2,v.s3);return{v:t,u:'MPa',s:[`σ<sub>max</sub> = ${f(mx)}, σ<sub>min</sub> = ${f(mn)} (σ₂ intermédiaire ignorée)`,`τ<sub>max</sub> = (${f(mx)} − ${f(mn)})/2 = <b>${f(t)} MPa</b>`,`k = σe/2 = ${f(v.se/2)} MPa ; τ<sub>max</sub>/k = ${f(t/(v.se/2),3)}`],n:t>=v.se/2?"⚠ τ<sub>max</sub> ≥ k : plastification (Tresca).":"✓ τ<sub>max</sub> < k : pas de plastification."}},
+ interp:"Changez σ₂ entre σ₃ et σ₁ : τ<sub>max</sub> ne bouge pas. C'est la caractéristique de Tresca (et la raison pour laquelle son hexagone est inscrit dans l'ellipse de von Mises).",expect:70,tol:1e-9,
+ q:{q:"Tresca ne tient pas compte de :",o:["σ₁","σ₂ (intermédiaire)","σ₃"],c:1,e:"τ<sub>max</sub> = (σ₁ − σ₃)/2 : σ₂ n'intervient pas."}},
+{id:'EQ-1-16',kind:'Critère',title:'Critère de von Mises (énergie de distorsion)',fig:'fig-1-09',
+ principle:"La plastification apparaît quand l'énergie de distorsion (changement de forme, hors changement de volume) atteint une valeur critique. Le critère est insensible à la pression hydrostatique.",
+ tex:T`\sigma_{eq}=\sqrt{\tfrac12\left[(\sigma_1-\sigma_2)^2+(\sigma_2-\sigma_3)^2+(\sigma_3-\sigma_1)^2\right]}=\sigma_e`,
+ sym:[[T`\sigma_{eq}`,"Contrainte équivalente de von Mises","MPa","≤ σe"],[T`\sigma_1,\sigma_2,\sigma_3`,"Contraintes principales","MPa","—"],[T`\sigma_e`,"Limite d'élasticité (traction)","MPa","—"]],
+ hyp:["Matériau ductile isotrope (métaux)","Insensible à la pression hydrostatique (même résistance en traction et compression)"],
+ lim:["Inadapté aux géomatériaux (sol, béton) : voir Drucker-Prager","Ne distingue pas traction/compression"],
+ err:["Oublier le facteur ½ sous la racine","Confondre σ<sub>eq</sub> avec σ₁"],
+ der:[T`Énergie de distorsion : \(W_d=\dfrac{1+\nu}{6E}\left[(\sigma_1-\sigma_2)^2+(\sigma_2-\sigma_3)^2+(\sigma_3-\sigma_1)^2\right]\).`,T`Critère : \(W_d=W_d^{crit}\).`,T`Calibrage en traction simple (\(\sigma_1=\sigma_e\)) : \(W_d^{crit}=\dfrac{(1+\nu)\sigma_e^2}{3E}\).`,T`Égalité ⇒ \(\tfrac12[\dots]=\sigma_e^2\), soit \(\sigma_{eq}=\sigma_e\).`,T`Contraintes planes (\(\sigma_3=0\)) : \(\sigma_1^2-\sigma_1\sigma_2+\sigma_2^2=\sigma_e^2\) : une <b>ellipse</b> (pas un cercle).`],
+ inp:[I('s1','σ₁','MPa',-200,300,5,140,"Contrainte principale"),I('s2','σ₂','MPa',-200,300,5,40,"Contrainte principale"),I('s3','σ₃','MPa',-200,300,5,0,"Contrainte principale"),I('se','σe','MPa',100,400,5,200,"Limite d'élasticité")],
+ rl:'σ<sub>eq</sub>',calc:v=>{const q=EQ.vm3(v.s1,v.s2,v.s3);return{v:q,u:'MPa',s:[`(σ₁−σ₂)² = ${f((v.s1-v.s2)**2)} ; (σ₂−σ₃)² = ${f((v.s2-v.s3)**2)} ; (σ₃−σ₁)² = ${f((v.s3-v.s1)**2)}`,`σ<sub>eq</sub> = √(½·${f((v.s1-v.s2)**2+(v.s2-v.s3)**2+(v.s3-v.s1)**2)}) = <b>${f(q)} MPa</b>`,`Marge : σe − σ<sub>eq</sub> = ${f(v.se-q)} MPa ; 2τ<sub>max</sub> (Tresca) = ${f(2*EQ.tau3(v.s1,v.s2,v.s3))} MPa`],n:q>=v.se?"⚠ σ<sub>eq</sub> ≥ σe : plastification (von Mises).":"✓ σ<sub>eq</sub> < σe : pas de plastification."}},
+ interp:"Ajoutez la même valeur aux trois contraintes (pression hydrostatique) : σ<sub>eq</sub> ne change pas. Comparez avec 2τ<sub>max</sub> : Tresca est toujours ≥ von Mises.",expect:124.9,tol:0.01,
+ q:{q:"von Mises est insensible à :",o:["La pression hydrostatique","Au cisaillement","À σ₂"],c:0,e:"Ajouter p aux trois σᵢ ne change aucune différence σᵢ − σⱼ."}},
+{id:'EQ-1-17',kind:'Critère',title:'Critère de Drucker-Prager (géomatériaux)',fig:'fig-1-09',
+ principle:"Pour les sols, roches et bétons, la résistance augmente avec le confinement. Drucker-Prager ajoute à von Mises un terme proportionnel à la pression hydrostatique (premier invariant I₁).",
+ tex:T`f=\sqrt{J_2}+\alpha I_1-k\le0`,
+ sym:[[T`I_1`,"Premier invariant = σ₁+σ₂+σ₃","MPa","—"],[T`J_2`,"Second invariant déviatorique","MPa²","—"],[T`\alpha`,"Sensibilité à la pression","–","0 (métaux) – 0,3"],[T`k`,"Paramètre de résistance","MPa","σe(1/√3+α)"]],
+ hyp:["Matériau isotrope pressure-dépendant","Convention : traction positive (I₁ < 0 en compression confinée)"],
+ lim:["Lisse mais approximatif par rapport à Mohr-Coulomb","α et k se calibrent sur des essais (cohésion, frottement)"],
+ err:["Se tromper de signe de I₁","Oublier que α = 0 redonne von Mises"],
+ der:[T`von Mises s'écrit \(\sqrt{J_2}=\sigma_e/\sqrt3\) (car \(\sigma_{eq}=\sqrt{3J_2}\)).`,T`Pour les géomatériaux, on ajoute un terme de pression : \(\sqrt{J_2}+\alpha I_1=k\).`,T`Calibrage en traction uniaxiale (\(\sigma_1=\sigma_e\)) : \(J_2=\sigma_e^2/3\), \(I_1=\sigma_e\) ⇒ \(k=\sigma_e(1/\sqrt3+\alpha)\).`,T`\(\alpha=0\) : on retrouve von Mises.`],
+ inp:[I('s1','σ₁','MPa',-200,300,5,140,"Contrainte principale"),I('s2','σ₂','MPa',-200,300,5,40,"Contrainte principale"),I('s3','σ₃','MPa',-200,300,5,0,"Contrainte principale"),I('al','α','–',0,0.3,0.01,0.1,"Sensibilité à la pression"),I('se','σe','MPa',100,400,5,200,"Limite d'élasticité en traction")],
+ rl:'f',calc:v=>{const k=EQ.kDP(v.se,v.al),J=((v.s1-v.s2)**2+(v.s2-v.s3)**2+(v.s3-v.s1)**2)/6,I1=v.s1+v.s2+v.s3,fv=EQ.dp(v.s1,v.s2,v.s3,v.al,k);return{v:fv,u:'MPa',s:[`I₁ = ${f(I1)} MPa ; J₂ = ${f(J)} MPa² ; √J₂ = ${f(Math.sqrt(J))}`,`k = σe(1/√3 + α) = ${f(k)} MPa`,`f = √J₂ + α·I₁ − k = ${f(Math.sqrt(J))} + ${f(v.al*I1)} − ${f(k)} = <b>${f(fv)} MPa</b>`,`Contrôle α=0 : √3·√J₂ = ${f(Math.sqrt(3*J))} = σ<sub>eq</sub> von Mises`],n:fv>=0?"⚠ f ≥ 0 : plastification.":"✓ f < 0 : état admissible (élastique)."}},
+ interp:"Rendez σ₁, σ₂, σ₃ négatifs (confinement) : f diminue, le matériau « résiste mieux ». Avec α = 0 le critère ne voit plus la pression.",expect:-45.36,tol:0.02,
+ q:{q:"α = 0 dans Drucker-Prager donne le critère de :",o:["von Mises","Tresca","Mohr-Coulomb"],c:0,e:"√J₂ = k est exactement von Mises (σeq = √(3J₂))."}},
+{id:'EQ-1-18',kind:'Définition',title:'Variable d\'endommagement D',fig:'fig-1-11',
+ principle:"L'endommagement mesure la fraction de section « perdue » par cavités et micro-fissures : D = 0 matériau sain, D = 1 rupture.",
+ tex:T`D=\frac{S_D}{S}\in[0,1]`,
+ sym:[[T`S`,"Section nominale","mm²","—"],[T`S_D`,"Aire des défauts (cavités, fissures)","mm²","—"],[T`D`,"Variable d'endommagement","–","0 – 0,3 (en service)"]],
+ hyp:["Défauts répartis uniformément (isotropie)","D identique sur tout plan de coupe"],
+ lim:["S<sub>D</sub> n'est pas mesurable directement : on identifie D par la perte de rigidité D = 1 − Ẽ/E (EQ-1-20)","Pas d'anisotropie de l'endommagement"],
+ err:["Confondre D (fraction de surface) et un taux de déformation","Prendre D = S_D (sans diviser par S)"],
+ der:[T`La section \(S\) contient des vides d'aire totale \(S_D\).`,T`La section <b>résistante</b> (saine) est \(S-S_D\).`,T`On normalise : \(D=S_D/S\) ; ainsi \(S-S_D=S(1-D)\).`,T`En pratique, on identifie \(D\) à partir de la perte de rigidité : \(D=1-\tilde E/E\).`],
+ inp:[I('S','S','mm²',400,1200,50,600,"Section nominale"),I('SD','S_D','mm²',0,400,10,90,"Aire des défauts")],
+ rl:'D',calc:v=>{const D=v.SD/v.S;return{v:D,u:'–',s:[`D = S<sub>D</sub>/S = ${f(v.SD)} / ${f(v.S)} = <b>${f(D)}</b> (${f(D*100,3)} % de section perdue)`,`Section saine : S(1 − D) = ${f(v.S-v.SD)} mm²`],n:v.SD>v.S?"⚠ S<sub>D</sub> ne peut dépasser S.":""}},
+ interp:"D est un simple rapport d'aires : D = 0,15 signifie que 15 % de la section ne porte plus.",expect:0.15,tol:1e-9,
+ q:{q:"D = 0,3 signifie :",o:["30 % de la section ne porte plus","30 % de déformation plastique","Rupture"],c:0,e:"D = S_D/S : fraction de surface endommagée."}},
+{id:'EQ-1-19',kind:'Loi',title:'Contrainte effective σ̃ = σ/(1 − D)',fig:'fig-1-11',
+ principle:"La force totale est reprise par la seule partie saine de la section : la contrainte « vue » par la matière intacte est donc plus grande que la contrainte nominale.",
+ tex:T`\tilde\sigma=\frac{\sigma}{1-D}`,
+ sym:[[T`\sigma`,"Contrainte nominale F/S","MPa","—"],[T`\tilde\sigma`,"Contrainte effective","MPa","≥ σ"],[T`D`,"Endommagement","–","0 – 1"]],
+ hyp:["Modèle isotrope scalaire (Kachanov–Lemaître)","Traction uniaxiale"],
+ lim:["Non valable pour les matériaux anisotropes, l'endommagement orienté ou l'effet unilatéral (refermeture des fissures en compression)","Diverge quand D → 1"],
+ err:["Écrire σ̃ = σ(1 − D) (formule inverse !)","Utiliser D en %"],
+ der:[T`Force totale : \(F=\sigma S\).`,T`Elle est supportée par la partie saine : \(F=\tilde\sigma(S-S_D)\).`,T`Égalité : \(\sigma S=\tilde\sigma(S-S_D)\).`,T`Factorisation \(S-S_D=S(1-D)\) puis simplification par \(S\).`,T`Résultat : \(\tilde\sigma=\sigma/(1-D)\).`],
+ inp:[I('s','σ','MPa',100,500,10,350,"Contrainte nominale"),I('D','D','–',0,0.95,0.01,0.15,"Endommagement")],
+ rl:'σ̃',calc:v=>{const s=EQ.eff(v.s,v.D);return{v:s,u:'MPa',s:[`1 − D = ${f(1-v.D)}`,`σ̃ = σ/(1 − D) = ${f(v.s)} / ${f(1-v.D)} = <b>${f(s)} MPa</b>`,`Amplification σ̃/σ = ${f(1/(1-v.D),3)} (+${f(100*v.D/(1-v.D),3)} %)`]}},
+ interp:"Le facteur d'amplification 1/(1−D) explose quand D → 1 : à D = 0,5 la contrainte est doublée, à D = 0,9 elle est multipliée par 10.",expect:411.7647,tol:0.01,
+ q:{q:"Pour D > 0, σ̃ est :",o:["plus grande que σ","plus petite que σ","égale à σ"],c:0,e:"1/(1−D) > 1."}},
+{id:'EQ-1-20',kind:'Principe',title:'Principe d\'équivalence en déformation (Lemaître, 1971)',fig:'fig-1-11',
+ principle:"La déformation d'un matériau endommagé sous σ est la même que celle du matériau sain soumis à la contrainte effective σ̃. L'endommagement se traduit donc par une perte apparente de rigidité.",
+ tex:T`\varepsilon=\frac{\tilde\sigma}{E}=\frac{\sigma}{E(1-D)},\qquad \tilde E=E(1-D)`,
+ sym:[[T`\varepsilon`,"Déformation","–","—"],[T`\tilde E`,"Module apparent du matériau endommagé","MPa","E(1 − D)"],[T`E`,"Module du matériau sain","MPa","210 000"],[T`D`,"Endommagement","–","—"]],
+ hyp:["Modèle isotrope scalaire","Comportement élastique du matériau sain (σ̃ ≤ σe)"],
+ lim:["Si σ̃ > σe, la partie saine plastifie : ε = σ̃/E n'est plus valable","Pas d'effet unilatéral"],
+ err:["Appliquer ε = σ̃/E alors que σ̃ > σe (voir note ci-dessous)","Confondre E (sain) et Ẽ"],
+ der:[T`<b>Principe</b> : « un matériau endommagé sous \(\sigma\) se déforme comme le matériau sain sous \(\tilde\sigma\) ».`,T`Hooke appliqué au matériau sain : \(\varepsilon=\tilde\sigma/E\).`,T`Substitution de \(\tilde\sigma=\sigma/(1-D)\) : \(\varepsilon=\sigma/[E(1-D)]\).`,T`On lit un module apparent \(\tilde E=E(1-D)\) tel que \(\varepsilon=\sigma/\tilde E\).`,T`Application expérimentale : mesurer \(\tilde E\) (décharge) donne \(D=1-\tilde E/E\).`],
+ inp:[I('s','σ','MPa',100,500,10,350,"Contrainte nominale"),I('E','E','MPa',150000,250000,5000,210000,"Module du matériau sain"),I('D','D','–',0,0.95,0.01,0.15,"Endommagement"),I('se','σe','MPa',200,500,10,400,"Limite d'élasticité du matériau sain")],
+ rl:'ε',calc:v=>{const st=EQ.eff(v.s,v.D),e=EQ.dmgStrain(v.s,v.E,v.D),e0=v.s/v.E;return{v:e,u:'–',s:[`σ̃ = σ/(1 − D) = ${f(st)} MPa`,`ε = σ̃/E = <b>${f(e)}</b> ; matériau sain : ε₀ = σ/E = ${f(e0)} (+${f(100*(e/e0-1),3)} %)`,`Module apparent Ẽ = E(1 − D) = ${f(v.E*(1-v.D))} MPa`],n:st>v.se?`⚠ σ̃ = ${f(st)} MPa > σe = ${f(v.se)} MPa : la partie saine plastifie ; ε = σ̃/E n'est plus valable (ε réelle plus grande).`:"✓ σ̃ ≤ σe : la formule élastique est valable."}},
+ interp:"Avec les valeurs par défaut (Exercice 1.8), σ̃ = 411,8 MPa dépasse σe = 400 MPa : le calcul élastique sous-estime la déformation. Baissez σ pour revenir dans le domaine de validité.",expect:1.960784e-3,tol:1e-8,
+ q:{q:"Si D = 0,2, le module apparent Ẽ vaut :",o:["0,8 E","1,2 E","0,2 E"],c:0,e:"Ẽ = E(1 − D) = 0,8 E."}},
+{id:'EQ-1-21',kind:'Résultat',title:'Moment plastique M_p et facteur de forme f',fig:'fig-1-12',
+ principle:"Quand toute la section plastifie, la distribution de contrainte devient un bloc rectangulaire ±σe : le moment atteint son maximum M<sub>p</sub>. La section se comporte alors comme une rotule.",
+ tex:T`Z_{pl}=\frac{bh^2}{4},\quad M_p=\sigma_e Z_{pl},\quad f=\frac{M_p}{M_e}=\frac{Z_{pl}}{W_{el}}=\frac32`,
+ sym:[[T`Z_{pl}`,"Module plastique","mm³","bh²/4 (rectangle)"],[T`M_p`,"Moment plastique","kN·m","—"],[T`M_e=\sigma_eW_{el}`,"Moment au seuil élastique","kN·m","—"],[T`f`,"Facteur de forme","–","1,5 (rectangle) ; ≈1,1–1,2 (profilés en I)"]],
+ hyp:["Matériau EPP (pas d'écrouissage)","Sections planes (PR-1)","Section symétrique, flexion simple"],
+ lim:["Écrouissage ignoré (réserve supplémentaire)","Effort tranchant ou normal important réduit M<sub>p</sub>","Voilement / déversement peuvent empêcher la rotule"],
+ err:["Utiliser W<sub>el</sub> à la place de Z<sub>pl</sub>","Oublier que l'axe neutre plastique partage l'aire en deux moitiés égales","Mélanger N·mm et kN·m"],
+ der:[T`Toute la section plastifie : contrainte \(+\sigma_e\) en traction, \(-\sigma_e\) en compression.`,T`Résultantes : \(T=C=\sigma_e\cdot b\cdot\dfrac h2\) (aire \(bh/2\) de chaque côté).`,T`Les deux résultantes sont séparées d'un bras de levier \(h/2\) (chaque centre est à \(h/4\) de l'axe neutre).`,T`\(M_p=T\cdot\dfrac h2=\sigma_e\dfrac{bh}{2}\cdot\dfrac h2=\sigma_e\dfrac{bh^2}{4}\).`,T`Facteur de forme : \(f=\dfrac{bh^2/4}{bh^2/6}=\dfrac32\).`],
+ inp:[I('b','b','mm',100,400,10,200,"Largeur"),I('h','h','mm',200,600,10,400,"Hauteur"),I('se','σe','MPa',150,400,5,235,"Limite d'élasticité")],
+ rl:'M<sub>p</sub>',calc:v=>{const Mp=EQ.Mp(v.b,v.h,v.se),Me=EQ.Me(v.b,v.h,v.se);return{v:Mp,u:'kN·m',s:[`Z<sub>pl</sub> = bh²/4 = ${f(EQ.Zpl(v.b,v.h))} mm³`,`M<sub>p</sub> = σe·Z<sub>pl</sub> = <b>${f(Mp)} kN·m</b>`,`M<sub>e</sub> = σe·W<sub>el</sub> = ${f(Me)} kN·m`,`f = M<sub>p</sub>/M<sub>e</sub> = ${f(Mp/Me,3)}`]}},
+ interp:"Le facteur de forme du rectangle (1,5) ne dépend ni de b, ni de h, ni de σe : c'est une propriété purement géométrique de la section.",expect:1880,tol:1e-6,
+ q:{q:"Le facteur de forme f d'une section rectangulaire vaut :",o:["1,0","1,5","2,0"],c:1,e:"f = (bh²/4)/(bh²/6) = 3/2."}},
+{id:'EQ-1-22',kind:'Résultat',title:'Charge de ruine plastique P_p et gain plastique',fig:'fig-1-12',
+ principle:"Dans une poutre isostatique, la formation d'une seule rotule plastique à mi-travée crée un mécanisme (PR-3). À la ruine, le moment maximal vaut M<sub>p</sub>.",
+ tex:T`P_p=\frac{4M_p}{L},\quad P_e=\frac{4M_e}{L},\quad \frac{P_p}{P_e}=f`,
+ sym:[[T`P_p`,"Charge de ruine plastique","kN","—"],[T`P_e`,"Charge de première plastification","kN","835 kN (Ex. 1.1)"],[T`M_p,M_e`,"Moments plastique / élastique","kN·m","—"],[T`L`,"Portée","m","—"]],
+ hyp:["Poutre isostatique, charge centrale","Rotule parfaitement plastique (EPP)","Capacité de rotation suffisante"],
+ lim:["Poutre hyperstatique : plusieurs rotules, calcul par mécanismes","Ignore le poids propre et les instabilités"],
+ err:["Confondre P<sub>e</sub> et P<sub>p</sub>","Appliquer P<sub>p</sub>/P<sub>e</sub> = f à une poutre hyperstatique sans vérifier le mécanisme"],
+ der:[T`À la ruine, la rotule se forme sous la charge : \(M_{\max}=M_p\).`,T`Or \(M_{\max}=PL/4\) (EQ-1-02), donc \(P_p=4M_p/L\).`,T`De même à la première plastification : \(P_e=4M_e/L\).`,T`Rapport : \(P_p/P_e=M_p/M_e=f\) : le gain plastique de la poutre est celui de la section (50 % pour le rectangle).`],
+ inp:[I('L','L','m',3,10,0.5,6,"Portée"),I('b','b','mm',100,400,10,200,"Largeur"),I('h','h','mm',200,600,10,400,"Hauteur"),I('se','σe','MPa',150,400,5,235,"Limite d'élasticité")],
+ rl:'P<sub>p</sub>',calc:v=>{const Pp=EQ.Pp(v.L,v.b,v.h,v.se),Pe=EQ.Pe(v.L,v.b,v.h,v.se);return{v:Pp,u:'kN',s:[`M<sub>e</sub> = ${f(EQ.Me(v.b,v.h,v.se))} kN·m ; M<sub>p</sub> = ${f(EQ.Mp(v.b,v.h,v.se))} kN·m`,`P<sub>e</sub> = 4M<sub>e</sub>/L = <b>${f(Pe)} kN</b> (première plastification)`,`P<sub>p</sub> = 4M<sub>p</sub>/L = <b>${f(Pp)} kN</b> (ruine)`,`Gain = P<sub>p</sub>/P<sub>e</sub> − 1 = ${f(100*(Pp/Pe-1),3)} %`]}},
+ interp:"Pour l'Exemple 1.1 : on passe de 835 kN (limite élastique) à 1253 kN (ruine), soit +50 %. C'est le « gain plastique » promis par le chapitre.",expect:1253.33,tol:0.05,
+ q:{q:"Pour une poutre isostatique centrée, P<sub>p</sub>/P<sub>e</sub> est égal à :",o:["Au facteur de forme f","À 1","À L/4"],c:0,e:"Même géométrie de chargement : seul M<sub>p</sub>/M<sub>e</sub> intervient."}}
+];
+const TESTS=CARDS.filter(c=>c.calc).map(c=>({name:c.id+' — '+c.title+' (valeurs par défaut)',fn:()=>{const st={};c.inp.forEach(i=>st[i.k]=i.v);return c.calc(st).v},exp:c.expect,tol:c.tol}));
+TESTS.push(
+ {name:'Indépendant : Tresca τmax(200,100,−50) = 125 MPa',fn:()=>EQ.tau3(200,100,-50),exp:125,tol:1e-9},
+ {name:'Indépendant : von Mises(200,100,−50) = 217,94 MPa',fn:()=>EQ.vm3(200,100,-50),exp:217.94,tol:0.01},
+ {name:'Ellipse vM : point (σe,σe) sur la frontière',fn:()=>EQ.vmPS(200,200),exp:200,tol:1e-9},
+ {name:'Ellipse vM : point (σe,0) sur la frontière',fn:()=>EQ.vmPS(200,0),exp:200,tol:1e-9},
+ {name:'Drucker-Prager α=0 ≡ von Mises (σeq/√3 = √J2)',fn:()=>EQ.dp(140,40,0,0,0)*Math.sqrt(3),exp:EQ.vm3(140,40,0),tol:1e-9},
+ {name:'Mohr (120,60,40) → σ1 = 140',fn:()=>EQ.princ(120,60,40).s1,exp:140,tol:1e-9},
+ {name:'Mohr (120,60,40) → σ2 = 40',fn:()=>EQ.princ(120,60,40).s2,exp:40,tol:1e-9},
+ {name:'Facteur de forme rectangle f = 1,5',fn:()=>EQ.Mp(200,400,235)/EQ.Me(200,400,235),exp:1.5,tol:1e-12},
+ {name:'Relaxation à t=τ : σ/σ0 = e⁻¹',fn:()=>EQ.mxRelax(2e5,1e-3,1e9,5000)/200,exp:Math.exp(-1),tol:1e-12},
+ {name:'K-V à t=τ : 63,2 % de σ0/E',fn:()=>EQ.kvCreep(20,2000,5e5,250)/0.01,exp:0.6321,tol:1e-3},
+ {name:'Exo 1.8 : +17,6 % de déformation (D=0,15)',fn:()=>100*(1/0.85-1),exp:17.647,tol:0.01},
+ {name:'Exo 1.3 : σ(3600) = 194,7 MPa',fn:()=>EQ.mxRelax(2e5,2e-3,1e9,3600),exp:194.70,tol:0.05}
+);
+</script>
+
+<!-- ================= UI ================= -->
+<script id="ui">
+'use strict';
+const $=id=>document.getElementById(id);
+const RM=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const KEY='pe_ch1_v8';
+let S={tabs:{},att:{},xp:0,level:1,combo:0,maxCombo:0,streak:0,lastVisit:'',speedBest:0,sound:true,badges:{},given:{},theme:'',flags:{}};
+try{Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+const CARD=Object.fromEntries(CARDS.map(c=>[c.id,c]));
+let ORDER=[];
+
+/* ---------- feedback utilitaires ---------- */
+let tt;function toast(m,cls){const t=$('toast');if(!t)return;t.textContent=m;t.className='toast show '+(cls||'');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600)}
+let AC=null;function sound(type){if(!S.sound)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.frequency.value={ok:660,bad:200,combo:880,up:1040}[type]||440;g.gain.setValueAtTime(.07,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.2);o.start();o.stop(AC.currentTime+.2)}catch(e){}}
+function confetti(n){if(RM)return;const cols=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899'];for(let i=0;i<(n||40);i++){const c=document.createElement('div');c.className='confetti-piece';c.style.left=Math.random()*100+'vw';c.style.background=cols[i%cols.length];c.style.animationDuration=1.5+Math.random()*1.5+'s';const z=6+Math.random()*8;c.style.width=c.style.height=z+'px';document.body.appendChild(c);setTimeout(()=>c.remove(),3500)}}
+
+/* ---------- XP / niveau ---------- */
+function addXP(n){S.xp+=n;let need=S.level*100,up=false;while(S.xp>=need){S.xp-=need;S.level=Math.min(S.level+1,99);need=S.level*100;up=true}save();renderFun();if(up){toast('🎉 Niveau '+S.level+' !','ok big');confetti(90);sound('up')}}
+function renderFun(){const need=S.level*100,p=Math.round(100*S.xp/need);$('funbar').innerHTML=`<b class="fl">Niv.${S.level}</b><span class="fxp" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></span><span class="ft">${S.xp}/${need} XP</span>${S.combo>=2?`<span class="fc">🔥×${S.combo}</span>`:''}${S.streak>=2?`<span class="fs">📅${S.streak}j</span>`:''}`}
+function dailyStreak(){const today=new Date().toDateString();if(S.lastVisit===today)return;const y=new Date(Date.now()-864e5).toDateString();S.streak=S.lastVisit===y?(S.streak||0)+1:1;S.lastVisit=today;save();if(S.streak>=2)toast('📅 '+S.streak+' jours consécutifs !','ok')}
+
+/* ---------- maîtrise & répétition espacée ---------- */
+function attempt(id,ok,qid,base){
+  const a=S.att[id]=S.att[id]||{h:[],last:0,interval:1,due:0,n:0};
+  a.h.push(ok?1:0);if(a.h.length>8)a.h.shift();a.n++;a.last=Date.now();
+  a.interval=ok?Math.min(30,Math.max(1,a.interval*2.2)):Math.max(.25,a.interval/3);
+  a.due=a.last+a.interval*864e5;
+  if(ok){S.combo++;S.maxCombo=Math.max(S.maxCombo,S.combo);sound('ok');
+    if(qid&&!S.given[qid]){S.given[qid]=1;const g=Math.round((base||10)*(1+Math.min(S.combo-1,4)*.5));addXP(g);toast('✓ +'+g+' XP'+(S.combo>=3?' · combo ×'+S.combo:''),'ok')}
+    else toast('✓ Correct (XP déjà obtenus pour cette question)','ok')}
+  else{if(S.combo>=3)toast('💥 Combo brisé (×'+S.combo+')','bad');S.combo=0;sound('bad')}
+  save();renderFun();refreshAll()}
+function score(id){const a=S.att[id];if(!a||!a.h.length)return 0;let w=0,s=0;a.h.forEach((x,i)=>{const wt=1+i*.5;w+=wt;s+=wt*x});const od=Math.max(0,(Date.now()-a.due)/864e5);return Math.round(100*(s/w)*Math.min(1,a.h.length/3)*Math.max(.5,1-.05*od))}
+function tabsOf(d){const t=[];if(d.sym)t.push(['sym','📖 Symboles']);t.push(['hyp','🧭 Hypothèses & limites']);if(d.der)t.push(['der','📐 Démonstration']);if(d.calc)t.push(['try','🎛️ Essayer']);t.push(['test','✅ Test']);return t}
+function stat(id){const d=CARD[id],seen=(S.tabs[id]||[]).length>=tabsOf(d).length,sc=score(id),a=S.att[id];return{seen,sc,due:!!(a&&Date.now()>=a.due),m:seen&&sc>=80}}
+
+/* ---------- cartes ---------- */
+function panelSym(d){return `<table><tr><th>Symbole</th><th>Signification</th><th>Unité</th><th>Ordre de grandeur</th></tr>${d.sym.map(r=>`<tr><td>\\(${r[0]}\\)</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</table>`}
+function panelHyp(d){const ul=a=>'<ul>'+(a||[]).map(x=>`<li>${x}</li>`).join('')+'</ul>';return `<div class="g3"><div class="pc good"><h5>Hypothèses (quand l'utiliser)</h5>${ul(d.hyp)}</div><div class="pc lim"><h5>Limites (quand l'abandonner)</h5>${ul(d.lim)}</div><div class="pc err"><h5>Erreurs fréquentes</h5>${ul(d.err)}</div></div>`}
+function panelDer(d){return `<p class="fig-note">Révélez les étapes une à une et essayez de <b>deviner la suivante</b> avant de cliquer.</p>${d.der.map((s,i)=>`<div class="step${i===0?' show':''}"><span class="n">${i+1}</span>${s}</div>`).join('')}<button class="btn" data-a="next">Étape suivante ▸</button> <button class="btn sec" data-a="all">Tout afficher</button> <button class="btn sec" data-a="reset">Recommencer</button>`}
+function panelTry(d){return `<p class="fig-note">Déplacez les curseurs (ou tapez une valeur). Le calcul détaillé, avec unités, se met à jour. Le tableau « Et si on double… ? » révèle la <b>loi</b> cachée dans l'équation.</p><div class="try-in"></div><div class="try-out" aria-live="polite"></div><h5 style="margin-top:10px">Et si on double / divise par deux… ?</h5><div class="try-sens"></div><div class="fig-interpret"><b>Que retenir ?</b> ${d.interp||''}</div><button class="btn sec try-reset" style="margin-top:8px">↺ Valeurs par défaut</button>`}
+function panelTest(d){return `<div class="mcq"></div>${d.calc?`<div class="chal"><h5>Défi numérique (valeurs tirées au hasard)</h5><div class="chal-body"></div></div>`:''}`}
+function openTab(el,d,t){el.querySelectorAll('.tab').forEach(x=>{const on=x.dataset.t===t;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});el.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.dataset.t===t));markTab(d.id,t)}
+function markTab(id,t){S.tabs[id]=S.tabs[id]||[];if(!S.tabs[id].includes(t)){S.tabs[id].push(t);save();refreshAll()}const b=document.querySelector(`#${id} .tab[data-t="${t}"]`);if(b)b.classList.add('seen')}
+function buildMcq(d,box){const order=shuffle(d.q.o.map((_,i)=>i));
+  box.innerHTML=`<div class="pr-q">${d.q.q}</div><div class="mcq-opts" role="group">${order.map(i=>`<button data-i="${i}">${d.q.o[i]}</button>`).join('')}</div><div class="fb" aria-live="polite"></div>`;
+  const fb=box.querySelector('.fb');let first=true,done=false;
+  box.querySelectorAll('.mcq-opts button').forEach(b=>b.addEventListener('click',()=>{if(done||b.disabled)return;const ok=+b.dataset.i===d.q.c;
+    if(first)attempt(d.id,ok,'mcq:'+d.id,10);
+    if(ok){b.classList.add('correct');fb.className='fb ok show';fb.innerHTML='✓ Exact. '+d.q.e+(first?'':' <i>(trouvé au 2<sup>e</sup> essai : refaites le test pour consolider)</i>');done=true;box.querySelectorAll('.mcq-opts button').forEach(x=>x.disabled=true);
+      const r=document.createElement('button');r.className='btn sec';r.style.marginTop='6px';r.textContent='↻ Refaire (options mélangées)';r.onclick=()=>buildMcq(d,box);fb.after(r)}
+    else{b.classList.add('wrong');b.disabled=true;fb.className='fb bad show';fb.innerHTML='✗ Pas exactement. Relisez « Hypothèses & limites » ou « Démonstration », puis réessayez.'}
+    first=false}))}
+function renderCard(d){
+  const el=document.createElement('div');el.className='eq-card';el.id=d.id;el.dataset.eq=d.id;const tabs=tabsOf(d);
+  el.innerHTML=`<div class="eq-head"><span class="eq-id">${d.id}</span><span class="kind">${d.kind}</span><span class="eq-title">${d.title}</span>${d.fig?`<a class="eq-fig" href="#${d.fig}">${d.fig.toUpperCase()}</a>`:''}<span class="st" data-st>À étudier</span></div>
+  <div class="eq-principle"><b>Principe.</b> ${d.principle}</div>${d.tex?`<div class="eq-body">\\[${d.tex}\\]</div>`:''}
+  <div class="tabs" role="tablist">${tabs.map((t,i)=>`<button class="tab${i===0?' on seen':''}" role="tab" aria-selected="${i===0}" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>
+  ${tabs.map((t,i)=>`<div class="panel${i===0?' on':''}" role="tabpanel" data-t="${t[0]}">${t[0]==='sym'?panelSym(d):t[0]==='hyp'?panelHyp(d):t[0]==='der'?panelDer(d):t[0]==='try'?panelTry(d):panelTest(d)}</div>`).join('')}`;
+  S.tabs[d.id]=S.tabs[d.id]||[];if(!S.tabs[d.id].includes(tabs[0][0]))S.tabs[d.id].push(tabs[0][0]);
+  S.tabs[d.id].forEach(t=>{const b=el.querySelector(`.tab[data-t="${t}"]`);if(b)b.classList.add('seen')});
+  el.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>openTab(el,d,b.dataset.t)));
+  const dp=el.querySelector('.panel[data-t="der"]');if(dp){const steps=[...dp.querySelectorAll('.step')];let n=1;dp.querySelectorAll('[data-a]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.a;if(a==='next'&&n<steps.length)n++;if(a==='all')n=steps.length;if(a==='reset')n=1;steps.forEach((s,i)=>s.classList.toggle('show',i<n))}))}
+  if(d.calc){const st={};d.inp.forEach(i=>st[i.k]=i.v);const inBox=el.querySelector('.try-in'),out=el.querySelector('.try-out'),sens=el.querySelector('.try-sens');
+    const upd=()=>{let r;try{r=d.calc(st)}catch(e){return}
+      out.innerHTML=`<div class="res">${d.rl} = <b>${f(r.v)}</b> ${r.u}</div><ol class="calc-steps">${r.s.map(x=>`<li>${x}</li>`).join('')}</ol>${r.n?`<div class="note">${r.n}</div>`:''}`;
+      sens.innerHTML=`<table class="sens"><tr><th>Grandeur modifiée</th><th>× 2 ⇒ résultat ×</th><th>÷ 2 ⇒ résultat ×</th><th>Loi</th></tr>${d.inp.map(i=>{if(!st[i.k])return '';const a=d.calc({...st,[i.k]:st[i.k]*2}).v,b=d.calc({...st,[i.k]:st[i.k]/2}).v,l=lawOf(r.v,a,b);return `<tr><td>${i.lab}</td><td>${l[0]}</td><td>${l[1]}</td><td>${l[2]}</td></tr>`}).join('')}</table>`};
+    d.inp.forEach(i=>{const row=document.createElement('label');row.className='inp';row.title=i.d||'';
+      row.innerHTML=`<span class="il">${i.lab} <small>(${i.u})</small></span><input type="range" min="${i.min}" max="${i.max}" step="${i.step}" value="${i.v}"><input type="number" step="any" value="${i.v}" aria-label="${i.lab}">`;
+      const rg=row.children[1],nm=row.children[2];
+      rg.addEventListener('input',()=>{nm.value=rg.value;st[i.k]=+rg.value;upd()});
+      nm.addEventListener('input',()=>{const x=parseFloat(nm.value);if(isFinite(x)){st[i.k]=x;rg.value=x;upd()}});inBox.appendChild(row)});
+    el.querySelector('.try-reset').addEventListener('click',()=>{d.inp.forEach((i,j)=>{st[i.k]=i.v;inBox.children[j].children[1].value=i.v;inBox.children[j].children[2].value=i.v});upd()});
+    upd();
+    const cb=el.querySelector('.chal-body');
+    const newChal=()=>{const c={};d.inp.forEach(i=>{const n=Math.floor((i.max-i.min)/i.step),k=Math.round(n*(.15+.7*Math.random()));c[i.k]=+(i.min+k*i.step).toPrecision(6)});
+      const ans=d.calc(c);let counted=false;
+      cb.innerHTML=`<p>Avec <b>${d.inp.map(i=>`${i.lab} = ${f(c[i.k])} ${i.u}`).join(' ; ')}</b>, calculez <b>${d.rl}</b> (en ${ans.u}).</p><input type="text" inputmode="decimal" placeholder="votre résultat" aria-label="Votre résultat"> <button class="btn" data-a="chk">Vérifier</button> <button class="btn sec" data-a="sol">Voir la solution</button> <button class="btn sec" data-a="new">Nouveau défi</button><div class="fb" aria-live="polite"></div>`;
+      const inp=cb.querySelector('input'),fb=cb.querySelector('.fb');
+      cb.querySelector('[data-a=chk]').addEventListener('click',()=>{const x=parseFloat(inp.value.replace(',','.').replace(/\s/g,''));if(!isFinite(x)){fb.className='fb info show';fb.textContent='Entrez un nombre (ex. 235 ou 1.2e-3).';return}
+        const ok=Math.abs(x-ans.v)<=.02*Math.abs(ans.v)+1e-15;
+        if(!counted){counted=true;attempt(d.id,ok,'chal:'+d.id,15)}
+        if(ok){fb.className='fb ok show';fb.innerHTML='✓ Correct (tolérance 2 %). Résultat : <b>'+f(ans.v)+' '+ans.u+'</b>.'}
+        else{fb.className='fb bad show';fb.innerHTML='✗ Pas tout à fait. '+diag(x,ans.v)}});
+      cb.querySelector('[data-a=sol]').addEventListener('click',()=>{fb.className='fb info show';fb.innerHTML='<b>Solution :</b><ol class="calc-steps">'+ans.s.map(x=>`<li>${x}</li>`).join('')+'</ol>'});
+      cb.querySelector('[data-a=new]').addEventListener('click',newChal)};
+    newChal()}
+  buildMcq(d,el.querySelector('.mcq'));
+  return el}
+/* diagnostic d'erreur d'unité / de facteur */
+function diag(x,a){if(!a||!x)return 'Vérifiez les unités et les conversions.';const r=x/a,t=(v,p)=>Math.abs(r/v-1)<(p||.03);
+  if(t(1e6))return 'Votre résultat est 10⁶ fois trop grand : conversion kN·m → N·mm ou mm → m ?';if(t(1e-6))return 'Votre résultat est 10⁶ fois trop petit : oubli du facteur 10⁶ (kN·m → N·mm) ?';
+  if(t(1e3))return 'Facteur 1000 : confusion kN/N ou m/mm ?';if(t(1e-3))return 'Facteur 1/1000 : confusion N/kN ou mm/m ?';
+  if(t(2))return 'Votre résultat est 2 fois trop grand (un facteur ½ ou h/2 oublié ?).';if(t(.5))return 'Votre résultat est 2 fois trop petit.';
+  if(t(4))return 'Facteur 4 : erreur sur un carré (h² ?) ou sur PL/4 ?';if(t(.25))return 'Facteur ¼ : PL/4 déjà appliqué deux fois ?';
+  if(r<0)return 'Le signe est inversé.';return 'Revoyez la substitution, ou consultez la solution.'}
+
+/* ---------- construction de la page ---------- */
+document.querySelectorAll('.slot').forEach(s=>{const d=CARD[s.dataset.card];if(d)s.replaceWith(renderCard(d))});
+ORDER=[...document.querySelectorAll('.eq-card')].map(e=>e.id);
+document.querySelectorAll('.fig-controls[data-spec]').forEach(box=>{const p=box.dataset.p;box.innerHTML=box.dataset.spec.split(';').map(s=>{const a=s.split('|');return `<label>${a[1]} <input type="range" id="${p}${a[0]}" min="${a[2]}" max="${a[3]}" step="${a[4]}" value="${a[5]}"><span class="v" id="${p}${a[0]}-v">${a[5]}</span> ${a[6]||''}</label>`}).join('')});
+function val(id){const el=$(id);if(!el)return NaN;const v=parseFloat(el.value),d=$(id+'-v');if(d)d.textContent=(Math.abs(v)>=1e6||(Math.abs(v)<1e-2&&v!==0))?v.toExponential(1):String(+v.toPrecision(5));return v}
+function typeset(el){try{if(window.MathJax&&MathJax.startup&&MathJax.startup.promise)return MathJax.startup.promise.then(()=>MathJax.typesetPromise(el?[el]:undefined)).catch(()=>{})}catch(e){}}
+
+/* ---------- Plotly (thème, react) ---------- */
+function themeVars(){const cs=getComputedStyle(document.documentElement),g=n=>cs.getPropertyValue(n).trim();return{paper:g('--plot-paper')||'#fff',bg:g('--plot-bg')||'#fafbfc',ink:g('--ink')||'#1f2937',grid:g('--plot-grid')||'#e5e7eb'}}
+function mk(id,data,layout){const el=$(id);if(!el)return;if(!window.Plotly){el.innerHTML='<div class="err">⚠ Plotly indisponible (connexion ?)</div>';return}
+  const t=themeVars(),L=layout||{},base={margin:{l:62,r:24,t:46,b:52},plot_bgcolor:t.bg,paper_bgcolor:t.paper,font:{family:'Inter,system-ui,sans-serif',size:11,color:t.ink},legend:{orientation:'h',y:1.18,x:.5,xanchor:'center',font:{size:10}}};
+  const ax=o=>Object.assign({gridcolor:t.grid,zerolinecolor:t.grid,linecolor:t.grid},o);
+  try{Plotly.react(el,data,Object.assign({},base,L,{xaxis:ax(L.xaxis),yaxis:ax(L.yaxis)}),{responsive:true,displayModeBar:false})}catch(e){el.innerHTML='<div class="err">⚠ Figure non disponible</div>';console.error(e)}}
+const lin=(c,w,dash)=>({color:c,width:w||3,dash});
+const setI=(id,h)=>{const e=$(id);if(e)e.innerHTML=h};
+function dpCurve(se,al){const k=EQ.kDP(se,al),X=[],Y=[];for(let i=0;i<=240;i++){const a=i*2*Math.PI/240,c=Math.cos(a),s=Math.sin(a),g=c*c-c*s+s*s,h=c+s,den=Math.sqrt(g/3)+al*h;if(den>1e-9){const r=k/den;if(r<6*se){X.push(r*c);Y.push(r*s);continue}}X.push(null);Y.push(null)}return{x:X,y:Y}}
+
+/* ---------- FIG-1-01 + animation d'essai ---------- */
+let TT=0,TA=null;
+function geo101(se,E,Et,eu){const ee=se/E,eb=Math.max(.015,ee*8),eC=eu*.85,su=se+Et*(eC-eb);return{se,E,Et,eu,ee,eb,eC,su}}
+function sig101(e,g){return e<g.ee?g.E*e:e<g.eb?g.se:e<g.eC?g.se+g.Et*(e-g.eb):g.su*.55+g.su*.45*(1-(e-g.eC)/(g.eu-g.eC))}
+function phase101(e,g){return e<g.ee?['1 · Élastique','#3b82f6',true]:e<g.eb?['2 · Palier plastique','#ef4444',false]:e<g.eC?['3 · Écrouissage','#10b981',false]:['4 · Striction','#f59e0b',false]}
+function fig101(){const g=geo101(val('f101-sige'),val('f101-E'),val('f101-Et'),val('f101-eu'));if(Object.values(g).some(isNaN))return;
+  const tr=[{x:[0,g.ee],y:[0,g.se],mode:'lines',name:'1. Élastique',line:lin('#3b82f6')},{x:[g.ee,g.eb],y:[g.se,g.se],mode:'lines',name:'2. Palier',line:lin('#ef4444')},{x:[g.eb,g.eC],y:[g.se,g.su],mode:'lines',name:'3. Écrouissage',line:lin('#10b981')},{x:[g.eC,g.eu],y:[g.su,g.su*.55],mode:'lines',name:'4. Striction',line:lin('#f59e0b')}];
+  const e=TT/100*g.eu;if(TT>0)tr.push({x:[e],y:[sig101(e,g)],mode:'markers',name:'essai',marker:{color:'#111827',size:16,symbol:'circle-open',line:{width:3}}});
+  mk('plot-f101',tr,{xaxis:{title:'ε (–)'},yaxis:{title:'σ (MPa)'}});
+  setI('interp-f101',`<b>Lecture :</b> ε<sub>e</sub> = σe/E = ${g.ee.toExponential(2)}, σ<sub>u</sub> ≈ ${g.su.toFixed(0)} MPa. Ductilité jusqu'à ε = ${(g.eu*100).toFixed(0)} % — <b>exemple</b>, non universel.`);
+  const ph=phase101(e,g),s=sig101(e,g);$('trac-eps').textContent=e.toFixed(4);
+  setI('trac-interp',`<b>${ph[0]}</b> · ε = ${e.toFixed(4)} · σ = ${s.toFixed(0)} MPa · <span style="color:${ph[2]?'var(--ok)':'var(--bad)'}">Réversible : ${ph[2]?'oui':'non'}</span>`);
+  specimen(e,g,ph)}
+function specimen(e,g,ph){const svg=$('trac-specimen');if(!svg)return;const len=220+Math.min(e,.3)*600,mid=40+len/2,th=22;let top='',bot='';
+  for(let x=40;x<=40+len;x+=4){const neck=ph[0][0]==='4'?.55*Math.exp(-(((x-mid)/28)**2)):0,hh=th*(1-.12*Math.min(e/g.eu,1))*(1-neck);top+=`${x},${50-hh} `;bot=`${x},${50+hh} `+bot}
+  svg.innerHTML=`<rect x="14" y="26" width="26" height="48" rx="3" fill="#64748b"/><polygon points="${top}${bot}" fill="${ph[1]}33" stroke="${ph[1]}" stroke-width="2"/><rect x="${40+len}" y="26" width="26" height="48" rx="3" fill="#64748b"/><text x="200" y="94" text-anchor="middle" font-size="10" fill="#6b7280">Phase ${ph[0]}</text>`}
+function tracPlay(){const b=$('trac-play');if(TA){clearInterval(TA);TA=null;b.textContent='▶ Simuler l\'essai';return}if(TT>=100)TT=0;b.textContent='⏸ Pause';TA=setInterval(()=>{TT=Math.min(TT+1,100);$('trac-t').value=TT;fig101();if(TT>=100){clearInterval(TA);TA=null;b.textContent='↻ Rejouer'}},RM?20:60)}
+$('trac-play').addEventListener('click',tracPlay);
+$('trac-reset').addEventListener('click',()=>{if(TA){clearInterval(TA);TA=null}$('trac-play').textContent='▶ Simuler l\'essai';TT=0;$('trac-t').value=0;fig101()});
+$('trac-t').addEventListener('input',e=>{TT=+e.target.value;fig101()});
+
+/* ---------- autres figures ---------- */
+function fig102(){const L=val('f102-L'),b=val('f102-b'),h=val('f102-h'),P=val('f102-P'),se=val('f102-sige'),M=EQ.Mmax(P,L),W=EQ.Wel(b,h),I_=EQ.Iy(b,h),sm=EQ.sigBeam(M,b,h);
+  const xs=[];for(let i=0;i<=100;i++)xs.push(i*L/100);
+  mk('plot-f102a',[{x:xs,y:xs.map(x=>x<=L/2?P*x/2:P*(L-x)/2),mode:'lines',name:'M(x)',line:lin('#3b82f6')},{x:[L/2],y:[M],mode:'markers',name:'Mmax',marker:{color:'#ef4444',size:12}}],{title:{text:'Moment M(x) (kN·m)',font:{size:12}},xaxis:{title:'x (m)'},yaxis:{title:'M (kN·m)'}});
+  const zs=[];for(let i=0;i<=40;i++)zs.push(-h/2+i*h/40);
+  mk('plot-f102b',[{x:zs.map(z=>M*1e6*z/I_),y:zs,mode:'lines',name:'σ(z)',line:lin('#3b82f6')}],{title:{text:'σ(z) à mi-travée (MPa)',font:{size:12}},xaxis:{title:'σ (MPa)'},yaxis:{title:'z (mm)'},shapes:[se,-se].map(x=>({type:'line',x0:x,x1:x,y0:-h/2,y1:h/2,line:{color:'#ef4444',width:1,dash:'dash'}}))});
+  setI('interp-f102',`<b>Lecture :</b> I = ${I_.toExponential(2)} mm⁴, W<sub>el</sub> = ${W.toExponential(2)} mm³. σ<sub>max</sub> = ${sm.toFixed(1)} MPa ${sm>se?'⚠ plastifié':'✓ élastique'} (σe = ${se}). P<sub>e</sub> = ${EQ.Pe(L,b,h,se).toFixed(1)} kN ; P<sub>p</sub> = ${EQ.Pp(L,b,h,se).toFixed(1)} kN.`)}
+function fig103(){const se=val('f103-sige'),E=val('f103-E'),Sx=val('f103-S'),L=val('f103-L'),Ne=EQ.Ne(se,Sx),dL=EQ.dLe(se,E,L);
+  mk('plot-f103',[{x:[0,dL],y:[0,Ne],mode:'lines',name:'élastique',line:lin('#3b82f6')},{x:[dL,dL*3],y:[Ne,Ne],mode:'lines',name:'palier plastique',line:lin('#ef4444')},{x:[dL],y:[Ne],mode:'markers',name:'Ne = Np',marker:{color:'#f59e0b',size:12}}],{xaxis:{title:'ΔL (mm)'},yaxis:{title:'N (kN)'}});
+  setI('interp-f103',`<b>Lecture :</b> N<sub>e</sub> = N<sub>p</sub> = ${Ne.toFixed(1)} kN, ΔL<sub>e</sub> = ${dL.toFixed(2)} mm. Pas de gain plastique en traction homogène.`)}
+function fig105(){const E=val('f105-E'),eta=val('f105-eta'),s0=val('f105-s0'),tau=eta/E,tm=3*tau,ts=[];for(let i=0;i<=200;i++)ts.push(i*tm/200);
+  mk('plot-f105a',[{x:ts,y:ts.map(t=>EQ.mxCreep(s0,E,eta,t)),mode:'lines',line:lin('#8b5cf6')}],{title:{text:'Fluage de Maxwell (illimité)',font:{size:12}},xaxis:{title:'t (s)'},yaxis:{title:'ε (–)'}});
+  mk('plot-f105b',[{x:ts,y:ts.map(t=>EQ.mxRelax(E,s0/E,eta,t)),mode:'lines',line:lin('#ef4444')}],{title:{text:'Relaxation de Maxwell',font:{size:12}},xaxis:{title:'t (s)'},yaxis:{title:'σ (MPa)'}});
+  setI('interp-f105',`<b>Lecture :</b> τ = η/E = ${tau.toExponential(2)} s (axe jusqu'à 3τ). À t = 3τ il reste ${(100*Math.exp(-3)).toFixed(1)} % de la contrainte.`)}
+function fig106(){const E=val('f106-E'),eta=val('f106-eta'),s0=val('f106-s0'),tau=eta/E,ts=[];for(let i=0;i<=200;i++)ts.push(i*5*tau/200);
+  mk('plot-f106',[{x:ts,y:ts.map(t=>EQ.kvCreep(s0,E,eta,t)),mode:'lines',name:'ε(t)',line:lin('#0ea5e9')},{x:[tau],y:[.632*s0/E],mode:'markers',name:'t = τ',marker:{color:'#f59e0b',size:12}}],{xaxis:{title:'t (s)'},yaxis:{title:'ε (–)'},shapes:[{type:'line',x0:0,x1:5*tau,y0:s0/E,y1:s0/E,line:{color:'#9ca3af',dash:'dot',width:1}}]});
+  setI('interp-f106',`<b>Lecture :</b> τ = ${tau.toExponential(2)} s, ε<sub>∞</sub> = σ₀/E = ${(s0/E).toExponential(2)} (pointillés). Fluage limité.`)}
+function fig107(){const ss=val('f107-sige'),E=val('f107-E'),ET=val('f107-Et'),ee=ss/E,em=.02;
+  mk('plot-f107',[{x:[0,0,em],y:[0,ss,ss],mode:'lines',name:'RPP',line:lin('#6b7280',3,'dash')},{x:[0,ee,em],y:[0,ss,ss],mode:'lines',name:'EPP',line:lin('#0ea5e9')},{x:[0,0,em],y:[0,ss,ss+ET*em],mode:'lines',name:'RPE',line:lin('#d97706',3,'dash')},{x:[0,ee,em],y:[0,ss,ss+ET*(em-ee)],mode:'lines',name:'EPE',line:lin('#ef4444')}],{xaxis:{title:'ε (–)'},yaxis:{title:'σ (MPa)'}});
+  setI('interp-f107',`<b>Lecture :</b> pente E = ${E}, post-élastique E<sub>T</sub> = ${ET} MPa. k = ${EQ.hk(E,ET).toFixed(0)} MPa (dσ = k·dε<sup>p</sup>, pas la pente σ–ε).`)}
+function fig108(){const E=val('f108-E'),ET=val('f108-Et'),s0=val('f108-s0'),k=EQ.hk(E,ET),ee=s0/E,ep=.02;
+  mk('plot-f108',[{x:[0,ee,ee+ep],y:[0,s0,s0+ET*ep],mode:'lines+markers',line:lin('#1e3a8a'),marker:{size:9}}],{xaxis:{title:'ε (–)'},yaxis:{title:'σ (MPa)'},annotations:[{x:ee/2,y:s0/2,text:'pente E',showarrow:false,font:{size:11,color:'#3b82f6'}},{x:ee+ep/2,y:s0+ET*ep/2+8,text:'pente E_T',showarrow:false,font:{size:11,color:'#ef4444'}}]});
+  setI('interp-f108',`<b>Lecture :</b> k = ${k.toFixed(0)} MPa pour E<sub>T</sub> = ${ET} MPa (dσ = k·dε<sup>p</sup>).`)}
+function fig109(){const se=val('f109-sige'),al=val('f109-alpha'),dp=dpCurve(se,al),t=[];for(let i=0;i<=200;i++)t.push(i*2*Math.PI/200);
+  mk('plot-f109',[{x:[se,se,0,-se,-se,0,se],y:[0,se,se,0,-se,-se,0],mode:'lines',name:'Tresca (hexagone)',line:lin('#ef4444')},{x:t.map(a=>se*(Math.cos(a)+Math.sin(a)/Math.sqrt(3))),y:t.map(a=>se*(Math.cos(a)-Math.sin(a)/Math.sqrt(3))),mode:'lines',name:'von Mises (ellipse)',line:lin('#3b82f6')},{x:dp.x,y:dp.y,mode:'lines',name:'Drucker-Prager',line:lin('#10b981'),connectgaps:false}],{xaxis:{title:'σ₁ (MPa)',range:[-2*se,2*se]},yaxis:{title:'σ₂ (MPa)',scaleanchor:'x',scaleratio:1,range:[-2*se,2*se]}});
+  setI('interp-f109',`<b>Lecture :</b> l'hexagone de Tresca (rouge) est <b>inscrit</b> dans l'ellipse de von Mises (bleue) : Tresca est plus conservateur. Drucker-Prager (vert, α = ${al.toFixed(2)}) se décale vers la compression (plus résistant) ; α = 0 le confond avec von Mises ; il reste ouvert côté compression pour α élevé.`)}
+function fig110(){const sx=val('f110-sx'),sy=val('f110-sy'),txy=val('f110-txy'),se=val('f110-sige'),P=EQ.princ(sx,sy,txy),[p1,p2,p3]=[P.s1,P.s2,0].sort((a,b)=>b-a),tm=(p1-p3)/2,vm=EQ.vm3(P.s1,P.s2,0),t=[];for(let i=0;i<=200;i++)t.push(i*2*Math.PI/200);
+  const C=(a,b)=>{const c=(a+b)/2,r=Math.abs(a-b)/2;return{x:t.map(u=>c+r*Math.cos(u)),y:t.map(u=>r*Math.sin(u))}},A=C(p1,p3),B=C(p1,p2),D=C(p2,p3);
+  mk('plot-f110',[{x:A.x,y:A.y,mode:'lines',name:'(σmax,σmin) : τmax',line:lin('#ef4444')},{x:B.x,y:B.y,mode:'lines',name:'(σ1,σ2)',line:lin('#9ca3af',2)},{x:D.x,y:D.y,mode:'lines',name:'(σ2,σ3)',line:lin('#9ca3af',2)},{x:[(p1+p3)/2],y:[tm],mode:'markers',name:'τmax 3D',marker:{color:'#ef4444',size:13}},{x:[sx,sy],y:[txy,-txy],mode:'markers+lines',name:'état (σx,τxy)',marker:{color:'#f59e0b',size:9,symbol:'x'},line:{color:'#f59e0b',width:1,dash:'dot'}}],
+   {xaxis:{title:'σ (MPa)'},yaxis:{title:'τ (MPa)',scaleanchor:'x',scaleratio:1},annotations:[{x:(p1+p3)/2,y:tm*1.25+5,text:`τmax 3D = (${p1.toFixed(0)} − ${p3.toFixed(0)})/2 = ${tm.toFixed(1)}<br>σeq vM = ${vm.toFixed(1)} · k Tresca = ${(se/2).toFixed(0)}`,showarrow:false,font:{size:10},bgcolor:'rgba(202,138,4,.15)',bordercolor:'#ca8a04'}]});
+  setI('interp-f110',`<b>Lecture :</b> σ₁ = ${P.s1.toFixed(1)}, σ₂ = ${P.s2.toFixed(1)}, σ₃ = 0. τ<sub>max</sub> (3D) = ${tm.toFixed(1)} MPa → Tresca : ${tm>=se/2?'⚠ plastifié':'✓ non plastifié'} (k = ${(se/2).toFixed(0)}). von Mises : σ<sub>eq</sub> = ${vm.toFixed(1)} MPa → ${vm>=se?'⚠ plastifié':'✓ non plastifié'}.`)}
+function fig111(){const D0=val('f111-D'),sg=val('f111-sig'),Ds=[];for(let i=0;i<=100;i++)Ds.push(i*.95/100);
+  mk('plot-f111',[{x:Ds,y:Ds.map(d=>1/(1-d)),mode:'lines',name:'σ̃/σ',line:lin('#3b82f6')},{x:[D0],y:[1/(1-D0)],mode:'markers',name:'état',marker:{color:'#ef4444',size:12,symbol:'x'}}],{xaxis:{title:'D (–)'},yaxis:{title:'σ̃/σ (–)',type:'log'}});
+  setI('interp-f111',`<b>Lecture :</b> σ̃ = σ/(1−D) = ${EQ.eff(sg,D0).toFixed(1)} MPa (σ = ${sg}), amplification ×${(1/(1-D0)).toFixed(2)}.`)}
+function fig112(){const m=val('f112-m'),b=val('f112-b'),h=val('f112-h'),se=val('f112-sige'),a=m<=1?h/2:h*Math.sqrt(.75-m/2),zs=[];for(let i=0;i<=80;i++)zs.push(-h/2+i*h/80);
+  const sg=zs.map(z=>m<=1?m*se*z/(h/2):(Math.abs(z)<a?se*z/a:Math.sign(z)*se));
+  mk('plot-f112a',[{x:sg,y:zs,mode:'lines',fill:'tozerox',name:'σ(z)',line:lin('#3b82f6'),fillcolor:'rgba(59,130,246,.15)'}],{title:{text:'Distribution σ(z)',font:{size:12}},xaxis:{title:'σ (MPa)',range:[-se*1.25,se*1.25]},yaxis:{title:'z (mm)'},shapes:[se,-se].map(x=>({type:'line',x0:x,x1:x,y0:-h/2,y1:h/2,line:{color:'#ef4444',dash:'dash',width:1}})).concat([{type:'rect',x0:-se*1.25,x1:se*1.25,y0:-a,y1:a,fillcolor:'rgba(16,185,129,.10)',line:{width:0}}])});
+  const q=m<=1?m:1/Math.sqrt(3-2*m),qs=[];for(let i=0;i<=120;i++)qs.push(i*6/120);
+  mk('plot-f112b',[{x:qs,y:qs.map(x=>x<=1?x:1.5-.5/(x*x)),mode:'lines',name:'M/Me',line:lin('#1e3a8a')},{x:[q],y:[m],mode:'markers',name:'état',marker:{color:'#ef4444',size:12}}],{title:{text:'Moment–courbure normalisés',font:{size:12}},xaxis:{title:'κ/κe'},yaxis:{title:'M/Me',range:[0,1.7]},shapes:[{type:'line',x0:0,x1:6,y0:1.5,y1:1.5,line:{color:'#10b981',dash:'dash',width:1}},{type:'line',x0:0,x1:6,y0:1,y1:1,line:{color:'#9ca3af',dash:'dot',width:1}}]});
+  const Me=EQ.Me(b,h,se),Mp=EQ.Mp(b,h,se);
+  setI('interp-f112',`<b>Lecture :</b> M = ${(m*Me).toFixed(0)} kN·m (M<sub>e</sub> = ${Me.toFixed(0)}, M<sub>p</sub> = ${Mp.toFixed(0)}). ${m<=1?'Section <b>entièrement élastique</b>.':`Cœur élastique a = ${a.toFixed(0)} mm ; zone plastifiée = ${(100*(1-a/(h/2))).toFixed(0)} % de la demi-hauteur ; κ = ${q.toFixed(2)}·κ<sub>e</sub>.`} Quand M/M<sub>e</sub> → 1,5, κ → ∞ : rotule plastique.`)}
+/* explorateur de poutre */
+function figBeam(){const a=val('bx-a'),xr=val('bx-x'),L=val('bx-L'),P=val('bx-P'),b=val('bx-b'),h=val('bx-h'),se=val('bx-se');
+  const aL=a*L,x=xr*L,RA=P*(1-a),Mf=xx=>xx<=aL?RA*xx:RA*xx-P*(xx-aL),Mload=P*a*(1-a)*L,Mx=Mf(x),I_=EQ.Iy(b,h),W=EQ.Wel(b,h),xs=[];for(let i=0;i<=200;i++)xs.push(i*L/200);
+  mk('plot-bxM',[{x:xs,y:xs.map(Mf),mode:'lines',name:'M(x)',line:lin('#3b82f6')},{x:[aL],y:[Mload],mode:'markers',name:'sous la charge',marker:{color:'#ef4444',size:13}},{x:[x],y:[Mx],mode:'markers',name:'section étudiée',marker:{color:'#10b981',size:12}}],{title:{text:`M(x) — Mmax = ${Mload.toFixed(1)} kN·m${Math.abs(a-.5)<.01?' (= PL/4)':''}`,font:{size:12}},xaxis:{title:'x (m)'},yaxis:{title:'M (kN·m)'}});
+  const zs=[];for(let i=0;i<=40;i++)zs.push(-h/2+i*h/40);
+  mk('plot-bxS',[{x:zs.map(z=>Mx*1e6*z/I_),y:zs,mode:'lines',fill:'tozerox',line:lin('#10b981'),fillcolor:'rgba(16,185,129,.15)'}],{title:{text:`σ(z) en x = ${x.toFixed(2)} m`,font:{size:12}},xaxis:{title:'σ (MPa)'},yaxis:{title:'z (mm)'},shapes:[se,-se].map(v=>({type:'line',x0:v,x1:v,y0:-h/2,y1:h/2,line:{color:'#ef4444',dash:'dash',width:1}}))});
+  const sm=Mload*1e6/W;setI('interp-bx',`<b>Lecture :</b> charge à ${aL.toFixed(2)} m (${(a*100).toFixed(0)} % de L). ${Math.abs(a-.5)<.01?'✓ Charge centrée : M<sub>max</sub> = PL/4, le cas le plus défavorable (M<sub>max</sub> = P·L·a(1−a) est maximal pour a = ½).':`M<sub>max</sub> = P·L·a(1−a) = ${Mload.toFixed(1)} kN·m, soit ${(100*Mload/(P*L/4)).toFixed(0)} % du cas centré.`} σ au droit de la charge : ${sm.toFixed(1)} MPa ${sm>se?'⚠ plastifié':'✓ élastique'}.`)}
+/* comparateur viscoélastique (σ0 pour le fluage, ε0 pour la relaxation : unités cohérentes) */
+let VT=0,VA=null;
+function figVisco(){const E=val('vc-E'),eta=val('vc-eta'),s0=val('vc-s0'),e0=val('vc-e0'),tau=eta/E,tm=3*tau,ts=[];for(let i=0;i<=200;i++)ts.push(i*tm/200);const tc=VT/100*tm;
+  mk('plot-vcC',[{x:ts,y:ts.map(t=>EQ.mxCreep(s0,E,eta,t)),mode:'lines',name:'Maxwell',line:lin('#ef4444')},{x:ts,y:ts.map(t=>EQ.kvCreep(s0,E,eta,t)),mode:'lines',name:'Kelvin-Voigt',line:lin('#0ea5e9')},{x:[tc,tc],y:[EQ.mxCreep(s0,E,eta,tc),EQ.kvCreep(s0,E,eta,tc)],mode:'markers',showlegend:false,marker:{color:['#ef4444','#0ea5e9'],size:13}}],{title:{text:`Fluage sous σ₀ = ${s0} MPa`,font:{size:12}},xaxis:{title:'t (s)'},yaxis:{title:'ε (–)'}});
+  mk('plot-vcR',[{x:ts,y:ts.map(t=>EQ.mxRelax(E,e0,eta,t)),mode:'lines',name:'Maxwell',line:lin('#ef4444')},{x:ts,y:ts.map(()=>E*e0),mode:'lines',name:'Kelvin-Voigt',line:lin('#0ea5e9')},{x:[tc,tc],y:[EQ.mxRelax(E,e0,eta,tc),E*e0],mode:'markers',showlegend:false,marker:{color:['#ef4444','#0ea5e9'],size:13}}],{title:{text:`Relaxation sous ε₀ = ${e0}`,font:{size:12}},xaxis:{title:'t (s)'},yaxis:{title:'σ (MPa)'}});
+  $('vc-tshow').textContent=tc.toFixed(0);
+  setI('interp-vc',`<b>τ = η/E = ${tau.toExponential(2)} s.</b> À t = ${tc.toFixed(0)} s : Maxwell a fluagé jusqu'à ε = ${f(EQ.mxCreep(s0,E,eta,tc))} (K-V : ${f(EQ.kvCreep(s0,E,eta,tc))} → ε<sub>∞</sub> = ${f(s0/E)}) ; en relaxation Maxwell garde ${f(EQ.mxRelax(E,e0,eta,tc))} MPa sur ${f(E*e0)}, K-V ne relaxe pas.`)}
+function viscoPlay(){const b=$('vc-play');if(VA){clearInterval(VA);VA=null;b.textContent='▶ Animer';return}if(VT>=100)VT=0;b.textContent='⏸ Pause';VA=setInterval(()=>{VT=Math.min(VT+2,100);$('vc-t').value=VT;figVisco();if(VT>=100){clearInterval(VA);VA=null;b.textContent='▶ Animer'}},RM?20:100)}
+$('vc-play').addEventListener('click',viscoPlay);
+$('vc-reset').addEventListener('click',()=>{if(VA){clearInterval(VA);VA=null}$('vc-play').textContent='▶ Animer';VT=0;$('vc-t').value=0;figVisco()});
+$('vc-t').addEventListener('input',e=>{VT=+e.target.value;figVisco()});
+/* explorateur de critères */
+function figYield(){const se=val('yx-se'),s1=val('yx-s1'),s2=val('yx-s2'),al=val('yx-al'),t=[];for(let i=0;i<=200;i++)t.push(i*2*Math.PI/200);const dp=dpCurve(se,al),R=2*se;
+  mk('plot-yx',[{x:[se,se,0,-se,-se,0,se],y:[0,se,se,0,-se,-se,0],mode:'lines',name:'Tresca',line:lin('#ef4444')},{x:t.map(a=>se*(Math.cos(a)+Math.sin(a)/Math.sqrt(3))),y:t.map(a=>se*(Math.cos(a)-Math.sin(a)/Math.sqrt(3))),mode:'lines',name:'von Mises',line:lin('#3b82f6')},{x:dp.x,y:dp.y,mode:'lines',name:'Drucker-Prager',line:lin('#10b981',2)},{x:[0,s1],y:[0,s2],mode:'lines',showlegend:false,line:{color:'#f59e0b',width:1,dash:'dot'}},{x:[s1],y:[s2],mode:'markers',name:'état',marker:{color:'#f59e0b',size:16,line:{color:'#92400e',width:2}}}],{xaxis:{title:'σ₁ (MPa)',range:[-R,R]},yaxis:{title:'σ₂ (MPa)',range:[-R,R],scaleanchor:'x',scaleratio:1}});
+  const pl=$('plot-yx');if(pl&&pl.on&&!pl._w){pl.on('plotly_click',ev=>{const p=ev.points[0];$('yx-s1').value=Math.round(p.x/5)*5;$('yx-s2').value=Math.round(p.y/5)*5;figYield()});pl._w=true}
+  const tm=EQ.tau3(s1,s2,0),vm=EQ.vm3(s1,s2,0),k=EQ.kDP(se,al),fd=EQ.dp(s1,s2,0,al,k),J=(s1*s1-s1*s2+s2*s2)/3,den=Math.sqrt(J)+al*(s1+s2),lamT=tm>0?se/(2*tm):Infinity,lamV=vm>0?se/vm:Infinity,lamD=den>0?k/den:Infinity;
+  const row=(n,v,th,pl2,lam)=>`<tr><td>${n}</td><td>${v}</td><td>${th}</td><td class="${pl2?'bad-status':'ok-status'}">${pl2?'⚠ plastifié':'✓ élastique'}</td><td>${isFinite(lam)?'×'+lam.toFixed(2):'∞'}</td></tr>`;
+  $('yx-read').innerHTML=`<p><b>σ₁ = ${s1}, σ₂ = ${s2}, σ₃ = 0 (contraintes planes)</b></p><table><tr><th>Critère</th><th>Valeur</th><th>Seuil</th><th>Verdict</th><th>Facteur de charge λ*</th></tr>${row('Tresca',tm.toFixed(1)+' MPa','k = '+(se/2).toFixed(0),tm>=se/2,lamT)}${row('von Mises',vm.toFixed(1)+' MPa','σe = '+se,vm>=se,lamV)}${row('Drucker-Prager','f = '+fd.toFixed(1),'f = 0',fd>=0,lamD)}</table><p class="fig-note">λ* : coefficient par lequel il faut multiplier le chargement (proportionnel) pour atteindre le seuil — c'est la « marge de sécurité » de chaque critère. Cliquez sur le graphique pour placer l'état.</p>`}
+function yieldPreset(k){const se=+$('yx-se').value,s=Math.round(se/Math.sqrt(3)/5)*5,m={traction:[se,0],compression:[0,-se],shear:[s,-s],biaxial:[se,se],pm:[se,-se],zero:[0,0]}[k];$('yx-s1').value=m[0];$('yx-s2').value=m[1];figYield()}
+document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>yieldPreset(b.dataset.preset)));
+/* visualiseur d'endommagement */
+const HOLES=(()=>{const r=[];let s=12345;for(let i=0;i<625;i++){s=(s*1103515245+12345)&0x7fffffff;r.push(s/0x7fffffff)}return r})();
+function figDamage(){const D=val('dv-D'),sg=val('dv-sig'),E=val('dv-E'),se=val('dv-se'),N=25,c=11,off=12,size=2*off+N*c;let holes='',n=0;
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(HOLES[i*N+j]<D){n++;holes+=`<circle cx="${off+i*c+c/2}" cy="${off+j*c+c/2}" r="${c*.36}" fill="rgba(220,38,38,.55)" stroke="#7f1d1d" stroke-width=".5"/>`}
+  const svg=$('dv-svg');svg.setAttribute('viewBox',`0 0 ${size} ${size}`);svg.innerHTML=`<rect x="${off}" y="${off}" width="${N*c}" height="${N*c}" fill="rgba(22,163,74,.12)" stroke="#16a34a" stroke-width="2"/>${holes}<text x="${size/2}" y="${size-2}" text-anchor="middle" font-size="11" fill="#6b7280" font-weight="700">D = ${D.toFixed(2)} (${(D*100).toFixed(0)} % de section perdue)</text>`;
+  const Ds=[];for(let i=0;i<=100;i++)Ds.push(i*.95/100);
+  mk('plot-dv',[{x:Ds,y:Ds.map(d=>1/(1-d)),mode:'lines',line:lin('#3b82f6')},{x:[D],y:[1/(1-D)],mode:'markers',marker:{color:'#ef4444',size:13,symbol:'x'}}],{title:{text:'σ̃/σ en fonction de D',font:{size:12}},xaxis:{title:'D'},yaxis:{title:'σ̃/σ',type:'log'}});
+  const st=EQ.eff(sg,D),e=EQ.dmgStrain(sg,E,D);setI('interp-dv',`<b>Lecture :</b> D = ${D.toFixed(2)} ⇒ ${n} cellules endommagées sur 625. σ̃ = <b>${st.toFixed(1)} MPa</b>, ε = ${e.toExponential(2)} (sain : ${(sg/E).toExponential(2)}). Module apparent Ẽ = ${(E*(1-D)).toFixed(0)} MPa.${st>se?` <span style="color:var(--bad)"><b>⚠ σ̃ > σe = ${se} MPa :</b> la partie saine plastifie, ε = σ̃/E n'est plus valable.</span>`:''}`)}
+/* solveur guidé (valeurs recalculées par le moteur) */
+let GP={L:6,b:200,h:400,se:235,P:835};
+function gsSteps(p){const I_=EQ.Iy(p.b,p.h),W=EQ.Wel(p.b,p.h),M=EQ.Mmax(p.P,p.L),sg=EQ.sigBeam(M,p.b,p.h),Pe=EQ.Pe(p.L,p.b,p.h,p.se),Mp=EQ.Mp(p.b,p.h,p.se),Pp=EQ.Pp(p.L,p.b,p.h,p.se);
+  return[{q:`I = bh³/12 (mm⁴)`,a:I_,u:'mm⁴',h:`I = ${p.b}·${p.h}³/12`,c:'EQ-1-03'},{q:'W<sub>el</sub> = bh²/6 (mm³)',a:W,u:'mm³',h:'W = I/(h/2)',c:'EQ-1-03'},{q:`M<sub>max</sub> = P·L/4 (kN·m)`,a:M,u:'kN·m',h:`M = ${p.P}×${p.L}/4`,c:'EQ-1-02'},{q:'σ<sub>max</sub> = M/W<sub>el</sub> (MPa) — attention aux unités !',a:sg,u:'MPa',h:'Convertir M en N·mm : × 10⁶',c:'EQ-1-03'},{q:'P<sub>e</sub> : charge de première plastification (kN)',a:Pe,u:'kN',h:'P<sub>e</sub> = 4σe·W/(L·10⁶) avec σ<sub>max</sub> = σe',c:'EQ-1-22'},{q:'M<sub>p</sub> = σe·bh²/4 (kN·m)',a:Mp,u:'kN·m',h:'Z<sub>pl</sub> = bh²/4',c:'EQ-1-21'},{q:'P<sub>p</sub> = 4M<sub>p</sub>/L : charge de ruine (kN)',a:Pp,u:'kN',h:'Même équilibre que EQ-1-02 avec M = M<sub>p</sub>',c:'EQ-1-22'},{q:'Gain plastique P<sub>p</sub>/P<sub>e</sub> − 1 (%)',a:(Pp/Pe-1)*100,u:'%',h:'Rapport = facteur de forme f',c:'EQ-1-21'}]}
+function gsRender(){const p=GP,steps=gsSteps(p),box=$('gs-steps');$('gs-params').innerHTML=`L = <b>${p.L}</b> m · b = <b>${p.b}</b> mm · h = <b>${p.h}</b> mm · σe = <b>${p.se}</b> MPa · P = <b>${p.P}</b> kN`;
+  box.innerHTML=steps.map((s,i)=>`<div class="gstep${i?' locked':''}" data-i="${i}"><div class="sg-head"><span class="sg-num">${i+1}</span><span class="sg-q">${s.q}</span></div><div class="gs-row"><input type="text" inputmode="decimal" placeholder="valeur (ex. 1.2e9)" aria-label="Réponse étape ${i+1}"> <b>${s.u}</b> <button class="btn" data-k>Vérifier</button> <button class="btn sec" data-h>Indice</button></div><div class="fb" aria-live="polite"></div><div class="gs-hint">💡 ${s.h}</div></div>`).join('');
+  $('gs-bar').style.width='0%';
+  box.querySelectorAll('.gstep').forEach((d,i)=>{const inp=d.querySelector('input'),fb=d.querySelector('.fb'),s=steps[i];let counted=false;
+    d.querySelector('[data-h]').addEventListener('click',()=>d.querySelector('.gs-hint').classList.toggle('show'));
+    const chk=()=>{const x=parseFloat(inp.value.replace(',','.'));if(!isFinite(x)){fb.className='fb info show';fb.textContent='Entrez un nombre.';return}const ok=Math.abs(x-s.a)<=.005*Math.abs(s.a)+1e-9;
+      if(!counted){counted=true;attempt(s.c,ok,'gs:'+i,8)}
+      if(ok){fb.className='fb ok show';fb.innerHTML='✓ '+f(s.a)+' '+s.u;d.classList.add('done');d.classList.remove('locked');const nx=d.nextElementSibling;if(nx)nx.classList.remove('locked');const n=box.querySelectorAll('.gstep.done').length;$('gs-bar').style.width=100*n/steps.length+'%';if(n===steps.length){S.flags.gs=true;save();toast('🧮 Exemple résolu en entier !','ok big');confetti(80);refreshAll()}}
+      else{fb.className='fb bad show';fb.innerHTML='✗ '+diag(x,s.a)}};
+    d.querySelector('[data-k]').addEventListener('click',chk);inp.addEventListener('keydown',e=>{if(e.key==='Enter')chk()})})}
+$('gs-new').addEventListener('click',()=>{const pick=a=>a[Math.floor(Math.random()*a.length)];GP={L:pick([4,5,6,7,8]),b:pick([150,200,250,300]),h:pick([300,400,500,600]),se:pick([235,275,355]),P:pick([300,400,500,600,700,800,900])};gsRender()});
+$('gs-reset').addEventListener('click',()=>{GP={L:6,b:200,h:400,se:235,P:835};gsRender()});
+
+/* ---------- registre des figures (rendu paresseux) ---------- */
+const REG=[['f101-',['sige','E','Et','eu'],fig101,'plot-f101'],['f102-',['L','b','h','P','sige'],fig102,'plot-f102a'],['f103-',['sige','E','S','L'],fig103,'plot-f103'],['f105-',['E','eta','s0'],fig105,'plot-f105a'],['f106-',['E','eta','s0'],fig106,'plot-f106'],['f107-',['sige','E','Et'],fig107,'plot-f107'],['f108-',['E','Et','s0'],fig108,'plot-f108'],['f109-',['sige','alpha'],fig109,'plot-f109'],['f110-',['sx','sy','txy','sige'],fig110,'plot-f110'],['f111-',['D','sig'],fig111,'plot-f111'],['f112-',['m','b','h','sige'],fig112,'plot-f112a'],['bx-',['a','x','L','P','b','h','se'],figBeam,'plot-bxM'],['vc-',['E','eta','s0','e0'],figVisco,'plot-vcC'],['yx-',['se','s1','s2','al'],figYield,'plot-yx'],['dv-',['D','sig','E','se'],figDamage,'plot-dv']].map(r=>({p:r[0],k:r[1],fn:r[2],plot:r[3],done:false}));
+REG.forEach(r=>r.k.forEach(k=>{const e=$(r.p+k);if(e)e.addEventListener('input',()=>{r.done=true;try{r.fn()}catch(x){console.error(x)}})}));
+const runReg=r=>{if(r.done)return;r.done=true;try{r.fn()}catch(e){console.error(r.plot,e)}};
+if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){REG.forEach(r=>{if(!r.done&&en.target.contains($(r.plot)))runReg(r)});io.unobserve(en.target)}}),{rootMargin:'400px'});document.querySelectorAll('.fig-card,.tool-card').forEach(e=>io.observe(e))}
+else window.addEventListener('load',()=>REG.forEach(runReg));
+window.addEventListener('beforeprint',()=>REG.forEach(runReg));
+const redrawAll=()=>REG.forEach(r=>{if(r.done)try{r.fn()}catch(e){}});
+
+/* ---------- thème ---------- */
+function applyTheme(t){document.documentElement.dataset.theme=t;$('btnTheme').textContent=t==='dark'?'☀️':'🌙';S.theme=t;save();redrawAll()}
+function toggleTheme(){applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark')}
+
+/* ---------- boutons de partage (liens) ---------- */
+document.querySelectorAll('.fig-card .fig-head,.tool-card .tool-head').forEach(h=>{const card=h.closest('.fig-card,.tool-card');if(!card.id)return;const b=document.createElement('button');b.className='share-btn';b.textContent='🔗';b.title='Copier un lien vers cette figure avec les valeurs des curseurs';b.setAttribute('aria-label','Copier le lien de cette figure');
+  b.addEventListener('click',()=>{const p=new URLSearchParams();card.querySelectorAll('input[type=range]').forEach(e=>{if(e.id)p.set(e.id,e.value)});const url=location.href.split(/[?#]/)[0]+'?'+p.toString()+'#'+card.id;
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(()=>toast('🔗 Lien copié','ok'),()=>prompt('Copiez ce lien :',url));else prompt('Copiez ce lien :',url)});h.appendChild(b)});
+(function restoreURL(){const p=new URLSearchParams(location.search);p.forEach((v,k)=>{const e=$(k);if(e&&e.type==='range')e.value=v})})();
+
+/* ---------- quiz statiques & prédictions ---------- */
+const QMAP=[['hooke, si on double','EQ-1-01'],['double \\(e\\)','EQ-1-01'],['section homogène','EQ-1-04'],['kelvin-voigt','EQ-1-10'],['τ','EQ-1-15'],['σ̃','EQ-1-19'],['unité du module','EQ-1-01'],['barre d','EQ-1-12'],['pourquoi tresca','EQ-1-15']];
+function mapQuiz(txt){const t=txt.toLowerCase();for(const [k,c] of QMAP)if(t.includes(k.toLowerCase()))return c;return 'EQ-1-01'}
+document.querySelectorAll('.quiz').forEach(q=>{const fb=q.querySelector('.fb'),card=mapQuiz(q.querySelector('.quiz-q').textContent),qid='quiz:'+q.querySelector('.quiz-q').textContent.slice(0,30);let first=true;fb.setAttribute('aria-live','polite');
+  q.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{if(b.disabled)return;const ok=b.dataset.ans===q.dataset.correct;if(first)attempt(card,ok,qid,10);first=false;
+    if(ok){b.classList.add('correct');fb.className='fb ok show';fb.innerHTML=q.dataset.ok;q.querySelectorAll('button').forEach(x=>x.disabled=true)}else{b.classList.add('wrong');b.disabled=true;fb.className='fb bad show';fb.innerHTML=q.dataset.bad}typeset(fb)}))});
+const PMAP={'fig-1-01':'EQ-1-01','fig-1-02':'EQ-1-03','fig-1-05':'EQ-1-08','fig-1-06':'EQ-1-10','fig-1-08':'EQ-1-14','fig-1-09':'EQ-1-16','fig-1-11':'EQ-1-19','fig-1-12':'EQ-1-21'};
+document.querySelectorAll('.predict-card').forEach(c=>{const fb=c.querySelector('.fb'),fg=c.closest('.fig-card'),card=PMAP[fg&&fg.id]||'EQ-1-01';let first=true;
+  c.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{if(b.disabled)return;const ok=b.dataset.ans===fb.dataset.correct;if(first)attempt(card,ok,'pred:'+(fg&&fg.id),5);first=false;
+    if(ok){b.classList.add('correct');fb.className='fb ok show';fb.innerHTML=fb.dataset.ok;c.querySelectorAll('button').forEach(x=>x.disabled=true)}else{b.classList.add('wrong');b.disabled=true;fb.className='fb bad show';fb.innerHTML=fb.dataset.bad}typeset(fb)}))});
+
+/* ---------- tableau de bord ---------- */
+function renderDash(){
+  const n=CARDS.length;let m=0,x=0,ok=0,tot=0;ORDER.forEach(id=>{const s=stat(id);if(s.m)m++;if(s.seen)x++});Object.values(S.att).forEach(a=>a.h.forEach(v=>{tot++;ok+=v}));
+  $('dash-tiles').innerHTML=[[`${m}/${n}`,'fiches maîtrisées'],[`${x}/${n}`,'fiches explorées'],['Niv. '+S.level,`${S.xp}/${S.level*100} XP`],[(S.streak||0)+' j','série quotidienne'],[tot?Math.round(100*ok/tot)+' %':'—','réussite (réponses récentes)']].map(t=>`<div class="tile"><b>${t[0]}</b><span>${t[1]}</span></div>`).join('');
+  const due=ORDER.filter(id=>stat(id).due).sort((a,b)=>S.att[a].due-S.att[b].due);
+  $('dash-due').innerHTML=due.length?`<div class="dueh">🔔 À réviser maintenant (${due.length})</div>`+due.map(id=>`<a class="due-chip" href="#${id}">↻ ${id} · ${strip(CARD[id].title).slice(0,34)}</a>`).join(''):'<div class="dueh" style="color:var(--ok)">✅ Aucune révision en retard</div>';
+  let rec=null,why='';
+  if(due.length){rec=due[0];why='En retard de révision : revoir maintenant évite d\'oublier.'}
+  else{const low=ORDER.filter(id=>S.att[id]&&score(id)<80).sort((a,b)=>score(a)-score(b))[0];if(low){rec=low;why='Score de '+score(low)+' % : retravaillez la démonstration puis refaites le test.'}
+    else{const nw=ORDER.find(id=>!stat(id).seen);if(nw){rec=nw;why='Fiche pas encore explorée (tous les onglets).'}}}
+  $('dash-rec').innerHTML=rec?`<div class="recommend"><h5>🎯 Prochaine étape conseillée</h5><div class="rec-title">${rec} — ${strip(CARD[rec].title)}</div><div class="rec-desc">${why}</div><a class="btn" href="#${rec}">Y aller →</a></div>`:'<div class="recommend"><h5>🏆</h5><div class="rec-title">Toutes les fiches sont maîtrisées et à jour !</div></div>';
+  $('dash-grid').innerHTML=ORDER.map(id=>{const s=stat(id),c=s.sc>=80?'var(--ok)':s.sc>=50?'var(--gold)':s.sc>0?'var(--bad)':'var(--muted)';return `<a class="mi" href="#${id}"><div class="mi-t">${id} · ${strip(CARD[id].title).slice(0,40)}</div><div class="mi-b"><i style="width:${s.sc}%;background:${c}"></i></div><div class="mi-m"><span>${s.sc} %</span><span>${s.m?'✔':s.seen?'◐ exploré':'·'}${s.due?' ↻':''}</span></div></a>`}).join('')}
+const BADGES=[
+ {id:'first',i:'🎯',n:'Premier pas',d:'Première réponse',c:()=>Object.keys(S.att).length>=1},
+ {id:'x5',i:'🧭',n:'Explorateur',d:'5 fiches explorées',c:()=>ORDER.filter(id=>stat(id).seen).length>=5},
+ {id:'xall',i:'🗺️',n:'Cartographe',d:'Toutes les fiches explorées',c:()=>ORDER.every(id=>stat(id).seen)},
+ {id:'m3',i:'✨',n:'Bon début',d:'3 fiches maîtrisées',c:()=>ORDER.filter(id=>stat(id).m).length>=3},
+ {id:'m10',i:'📚',n:'Studieux',d:'10 fiches maîtrisées',c:()=>ORDER.filter(id=>stat(id).m).length>=10},
+ {id:'mall',i:'🏆',n:'Expert Ch.1',d:'Toutes maîtrisées',c:()=>ORDER.every(id=>stat(id).m)},
+ {id:'c5',i:'🔥',n:'En feu',d:'5 bonnes réponses d\'affilée',c:()=>S.maxCombo>=5},
+ {id:'c10',i:'⚡',n:'Invincible',d:'10 d\'affilée',c:()=>S.maxCombo>=10},
+ {id:'s3',i:'📅',n:'Assidu',d:'3 jours consécutifs',c:()=>S.streak>=3},
+ {id:'sp8',i:'⏱️',n:'Éclair',d:'8 bonnes réponses en 30 s',c:()=>S.speedBest>=8},
+ {id:'gs',i:'🧮',n:'Calculateur',d:'Solveur guidé terminé',c:()=>!!S.flags.gs}];
+function renderBadges(){BADGES.forEach(b=>{if(!S.badges[b.id]&&b.c()){S.badges[b.id]=1;save();toast('🏅 Badge : '+b.n,'ok big');confetti(50);sound('up')}});
+  $('badges').innerHTML=BADGES.map(b=>`<div class="badge ${S.badges[b.id]?'unlocked':''}"><div class="icon">${b.i}</div><div class="name">${b.n}</div><div class="desc">${b.d}</div></div>`).join('')}
+function refreshAll(){let m=0,x=0;ORDER.forEach(id=>{const s=stat(id),el=$(id);if(s.m)m++;if(s.seen)x++;if(!el)return;el.classList.toggle('mastered',s.m);el.classList.toggle('explored',!s.m&&s.seen);
+  const st=el.querySelector('[data-st]');if(st)st.textContent=s.m?'✔ Maîtrisée':s.seen?(s.sc?`Explorée · ${s.sc} %`:'Explorée — passez le test'):(s.sc?`${s.sc} % · à explorer`:'À étudier');if(s.due&&st)st.textContent+=' · ↻ à réviser'});
+  $('progTxt').textContent=m+' / '+CARDS.length+' maîtrisées';$('progB').style.width=100*m/CARDS.length+'%';$('progA').style.width=100*x/CARDS.length+'%';renderDash();renderBadges()}
+
+/* ---------- sessions : round éclair & révision ---------- */
+const EXTRA=[['Quelle équation donne la loi de Hooke ?',['σ = Eε','σ = ηε̇','σ = σs'],0,'EQ-1-01'],['Le fluage de Maxwell est…',['limité','illimité','nul'],1,'EQ-1-07'],['Le fluage de Kelvin-Voigt est…',['limité','illimité','nul'],0,'EQ-1-10'],['τmax de Tresca pour σ₁ = 140, σ₃ = 0 (MPa) ?',['50','70','140'],1,'EQ-1-15'],['La frontière de von Mises en contraintes planes est…',['un cercle','une ellipse','un hexagone'],1,'EQ-1-16'],['D = 0 signifie…',['matériau sain','rupture','plastification'],0,'EQ-1-18'],['σ̃ vaut…',['σ(1−D)','σ/(1−D)','σ(1+D)'],1,'EQ-1-19'],['k (écrouissage) vaut…',['E/E_T','E·E_T/(E−E_T)','E−E_T'],1,'EQ-1-14'],['Tresca est … conservateur que von Mises',['plus','moins','aussi'],0,'EQ-1-15'],['τ = η/E est un…',['temps','module','déplacement'],0,'EQ-1-11'],['Drucker-Prager s\'applique surtout aux…',['métaux','géomatériaux','polymères'],1,'EQ-1-17'],['Si on double h, W_el est multiplié par',['2','4','8'],1,'EQ-1-03'],['Nombre de rotules d\'un mécanisme isostatique ?',['1','2','3'],0,'PR-3']];
+const BANK=[];CARDS.forEach(c=>{if(c.q)BANK.push({id:'bank:'+c.id,t:strip(c.q.q),o:c.q.o.map(strip),c:c.q.c,card:c.id,e:strip(c.q.e)})});EXTRA.forEach((x,i)=>{if(CARD[x[3]])BANK.push({id:'x:'+i,t:x[0],o:x[1],c:x[2],card:x[3],e:''})});
+let SES=null;
+function modal(id,on){const m=$(id);m.classList.toggle('show',on);m.setAttribute('aria-hidden',!on);if(on){const b=m.querySelector('button');if(b)b.focus()}}
+function closeSes(){if(SES&&SES.timer)clearInterval(SES.timer);SES=null;modal('modal-speed',false)}
+function openSes(mode){
+  let pool=BANK.slice();
+  if(mode==='review'){const ids=new Set(ORDER.filter(id=>stat(id).due||(S.att[id]&&score(id)<80)));if(!ids.size)ORDER.filter(id=>!S.att[id]).slice(0,6).forEach(i=>ids.add(i));const p=BANK.filter(b=>ids.has(b.card));if(p.length)pool=p}
+  shuffle(pool);if(mode==='review')pool=pool.slice(0,8);
+  SES={mode,pool,i:0,score:0,left:30,timer:null,cur:null,locked:false};
+  $('sp-title').textContent=mode==='speed'?'⚡ Round éclair — 30 s':'🔁 Révision ciblée';$('sp-timer').textContent=mode==='speed'?'30':'';$('sp-timer').classList.remove('danger');
+  $('sp-body').innerHTML=`<p>${mode==='speed'?'Répondez à un maximum de questions en 30 secondes. Touches 1-2-3 pour répondre.':`${pool.length} questions tirées de vos fiches à réviser ou fragiles. Pas de chrono : lisez les explications.`}</p><p class="fig-note">Chaque réponse compte pour la maîtrise des fiches concernées. Les XP ne sont gagnés qu'une fois par question (pas de farm).</p><button class="btn play" id="sp-go" style="padding:10px 28px;font-size:1rem">▶ Démarrer</button>`;
+  $('sp-go').onclick=startSes;modal('modal-speed',true)}
+function startSes(){if(SES.mode==='speed'){SES.timer=setInterval(()=>{SES.left--;$('sp-timer').textContent=SES.left;$('sp-timer').classList.toggle('danger',SES.left<=10);if(SES.left<=0)endSes()},1000)}nextQ()}
+function nextQ(){if(!SES)return;if(SES.i>=SES.pool.length){if(SES.mode==='speed'&&SES.pool.length<BANK.length){/* recycle */}endSes();return}
+  const q=SES.cur=SES.pool[SES.i++];SES.ord=shuffle(q.o.map((_,i)=>i));SES.locked=false;
+  $('sp-body').innerHTML=`<div class="speed-q">${q.t}</div><div class="speed-options">${SES.ord.map((i,k)=>`<button data-i="${i}"><kbd>${k+1}</kbd> ${q.o[i]}</button>`).join('')}</div><div id="sp-fb" class="fb" aria-live="polite"></div>`;
+  $('sp-body').querySelectorAll('.speed-options button').forEach(b=>b.addEventListener('click',()=>answerQ(+b.dataset.i)))}
+function answerQ(i){if(!SES||SES.locked)return;SES.locked=true;const q=SES.cur,ok=i===q.c;if(ok)SES.score++;
+  $('sp-body').querySelectorAll('.speed-options button').forEach(b=>{b.disabled=true;if(+b.dataset.i===q.c)b.classList.add('correct');else if(+b.dataset.i===i)b.classList.add('wrong')});
+  attempt(q.card,ok,q.id,8);
+  if(SES.mode==='review'){const fb=$('sp-fb');fb.className='fb '+(ok?'ok':'bad')+' show';fb.innerHTML=(ok?'✓ ':'✗ ')+(q.e||'')+` <a href="#${q.card}" onclick="closeSes()">Revoir la fiche ${q.card}</a><br><button class="btn" id="sp-next" style="margin-top:8px">Suivante →</button>`;$('sp-next').onclick=nextQ;$('sp-next').focus()}
+  else setTimeout(()=>{if(SES&&SES.mode==='speed')nextQ()},350)}
+function endSes(){if(!SES)return;if(SES.timer)clearInterval(SES.timer);const sc=SES.score,tot=SES.i-(SES.locked?0:1)||SES.i,mode=SES.mode;let rec='';
+  if(mode==='speed'){if(sc>S.speedBest){S.speedBest=sc;save();rec='<p style="color:var(--gold);font-weight:700">🎯 Nouveau record !</p>'}else rec=`<p class="fig-note">Record : ${S.speedBest}</p>`;if(sc>=8)confetti(120)}
+  const lab=sc>=8?'🏆 Incroyable !':sc>=5?'⭐ Très bien':sc>=3?'👍 Pas mal':'💪 Réessayez';
+  $('sp-body').innerHTML=`<div class="speed-result"><h3>${sc} / ${Math.max(tot,sc)}</h3><p style="font-size:1.1rem;font-weight:700">${lab}</p>${rec}<button class="btn" id="sp-close">Fermer</button> <button class="btn sec" id="sp-again">Rejouer</button></div>`;
+  $('sp-close').onclick=closeSes;$('sp-again').onclick=()=>openSes(mode);SES.pool=[];SES.i=0;SES.timer=null;SES.mode='done';refreshAll()}
+$('btnSpeed').addEventListener('click',()=>openSes('speed'));$('btnReview').addEventListener('click',()=>openSes('review'));
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{closeSes();modal('modal-help',false)}));
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m){closeSes();modal('modal-help',false)}}));
+
+/* ---------- export / réinitialisation / aide ---------- */
+function exportProgress(){const rows=ORDER.map(id=>({fiche:id,titre:strip(CARD[id].title),exploree:stat(id).seen,maitrisee:stat(id).m,score:score(id),tentatives:(S.att[id]||{n:0}).n}));
+  const blob=new Blob([JSON.stringify({date:new Date().toISOString(),niveau:S.level,xp:S.xp,serie_jours:S.streak,fiches:rows},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='progression_chapitre1.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+$('btnExport').addEventListener('click',exportProgress);
+$('btnReset').addEventListener('click',()=>{if(confirm('Effacer toute votre progression (XP, maîtrise, badges) ?')){try{localStorage.removeItem(KEY)}catch(e){}location.href=location.href.split(/[?#]/)[0]}});
+$('btnHelp').addEventListener('click',()=>modal('modal-help',true));
+$('btnTheme').addEventListener('click',toggleTheme);
+$('btnSound').addEventListener('click',()=>{S.sound=!S.sound;$('btnSound').textContent=S.sound?'🔊':'🔇';save();if(S.sound)sound('ok')});
+
+/* ---------- clavier ---------- */
+let KS='';
+document.addEventListener('keydown',e=>{const tg=e.target.tagName;if(tg==='INPUT'||tg==='TEXTAREA')return;
+  if(e.key==='Escape'){closeSes();modal('modal-help',false);return}
+  if($('modal-speed').classList.contains('show')&&SES&&/^[1-4]$/.test(e.key)){const b=$('sp-body').querySelectorAll('.speed-options button')[+e.key-1];if(b)b.click();return}
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==='d'||e.key==='D')toggleTheme();else if(e.key==='?')modal('modal-help',true);else if(e.key==='h'||e.key==='H')$('dashboard').scrollIntoView({behavior:RM?'auto':'smooth'});else if(e.key==='s'||e.key==='S')openSes('speed');
+  KS=(KS+e.key).slice(-12);if(KS.endsWith('tabet')){toast('📚 Bon courage !','ok');KS=''}});
+
+/* ---------- navigation ---------- */
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'})}}));
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(a&&!a._h){const t=document.querySelector(a.getAttribute('href'));if(t&&a.closest('#dash-due,#dash-rec,#dash-grid')){e.preventDefault();t.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'})}}});
+if('IntersectionObserver' in window){const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-20% 0px -70% 0px'});document.querySelectorAll('section.chs').forEach(s=>io2.observe(s))}
+
+/* ---------- formulaire + tests ---------- */
+$('formulaire').innerHTML=`<table><tr><th>Fiche</th><th>Nature</th><th>Intitulé</th><th>Formule</th></tr>${CARDS.filter(c=>c.tex).map(c=>`<tr><td><a href="#${c.id}">${c.id}</a></td><td>${c.kind}</td><td>${c.title}</td><td>\\(${c.tex}\\)</td></tr>`).join('')}</table>`;
+function runTests(){let p=0;const L=TESTS.map(t=>{let r;try{r=t.fn()}catch(e){r=NaN}const ok=Math.abs(r-t.exp)<=(t.tol||1e-6)+1e-15;if(ok)p++;return `<div style="color:${ok?'var(--ok)':'var(--bad)'}">${ok?'✓':'✗'} ${t.name} → ${fmt(r)}${ok?'':' (attendu '+fmt(t.exp)+')'}</div>`});
+  $('test-output').innerHTML=L.join('')+`<div style="margin-top:8px;font-weight:700;color:${p===TESTS.length?'var(--ok)':'var(--bad)'}">${p}/${TESTS.length} tests passés (valeurs attendues calculées à la main, indépendamment du moteur).</div>`}
+
+/* ---------- démarrage ---------- */
+window.addEventListener('load',()=>{setTimeout(()=>{
+  if(!(window.MathJax&&MathJax.startup)||!window.Plotly)$('cdnWarn').style.display='block';
+  typeset();runTests()},200)});
+(function init(){
+  const th=S.theme||(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=th;$('btnTheme').textContent=th==='dark'?'☀️':'🌙';$('btnSound').textContent=S.sound?'🔊':'🔇';
+  dailyStreak();renderFun();refreshAll();gsRender();
+  if(location.hash){setTimeout(()=>{const t=document.querySelector(location.hash);if(t)t.scrollIntoView()},500)}
+})();
+
+</script>
+</body>
+</html>
